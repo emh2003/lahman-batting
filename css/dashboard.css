@@ -1,0 +1,210 @@
+/* Styles used only on the dashboard page. */
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px 14px;
+  align-items: end;
+}
+.filter label, .switch label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  margin-bottom: 4px;
+}
+.filter-reset { display: flex; }
+.filter-reset .btn { width: 100%; }
+
+.switches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px 14px;
+  margin: 14px 0 6px;
+  padding: 12px 18px;
+  background: #f1ece0;
+  border-radius: var(--radius);
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+.diamond-art { width: 170px; height: 128px; flex: none; }
+@media (max-width: 700px) { .diamond-art { display: none; } }
+
+/* Main column (charts + table) with the legends sidebar on the right */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 32px;
+  align-items: start;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 32px;
+}
+.chart-card { margin: 0; min-width: 0; padding: 22px 24px 20px; }
+.chart-card h2, .table-card h2 { font-size: 1.25rem; margin-bottom: 8px; }
+.chart-box { position: relative; height: 380px; }
+
+.table-card { margin-top: 32px; padding: 22px 24px; }
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .legends { min-width: 0; }
+  .legends { order: -1; }
+}
+@media (max-width: 560px) {
+  .chart-grid { grid-template-columns: 1fr; gap: 20px; }
+  .chart-card { padding: 16px; }
+  .chart-box { height: 300px; }
+}
+
+/* ---------- Legends sidebar ---------- */
+.legends {
+  position: sticky;
+  top: 76px;
+  background: var(--navy);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 18px 16px 16px;
+  border-top: 6px solid var(--accent);
+}
+.legends-title {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+.legends-sub { margin: 0 0 14px; font-size: 0.85rem; color: #c7cbe0; }
+.legends-note { margin: 14px 0 0; font-size: 0.75rem; color: #9ea4c2; line-height: 1.4; }
+.legend-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.legend {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px 8px;
+  background: #1d2c4f;
+  border: 1px solid #2c3d66;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+.legend:hover, .legend:focus-visible {
+  background: #25385f;
+  border-color: #f2b8ba;
+  transform: translateY(-2px);
+  outline: none;
+}
+.legend.selected { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
+.legend .avatar {
+  width: 78px;
+  height: 90px;
+  border-radius: 8px;
+  background: linear-gradient(var(--paper) 72%, #cfe0d3 72%);
+  display: grid;
+  place-items: center;
+  border: 3px solid #c8322f;
+  padding: 4px 6px 2px;
+}
+.legend .avatar svg { width: 100%; height: 100%; color: var(--navy); }
+.legend .avatar svg.lefty { transform: scaleX(-1); }
+.legend .lg-name {
+  font-family: var(--font-head);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+}
+.legend .lg-years { font-size: 0.72rem; color: #9ea4c2; }
+
+/* Hover card with the player's stats */
+.legend .pop {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.96);
+  width: 220px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-left: 5px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(20, 33, 61, 0.28);
+  padding: 12px 14px;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 20;
+}
+.legend:hover .pop, .legend:focus-visible .pop {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+.pop .pop-name { font-family: var(--font-head); font-size: 1.05rem; margin-bottom: 2px; }
+.pop .pop-meta { font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 8px; }
+.pop .pop-stat { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-top: 1px dashed var(--rule); }
+.pop .pop-stat b { font-family: var(--font-head); font-size: 1.15rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pop .pop-stat span { font-size: 0.82rem; color: var(--ink-soft); align-self: center; }
+
+/* On narrow screens the sidebar sits above the charts as a scrolling row */
+@media (max-width: 1100px) {
+  .legends { position: static; }
+  .legend-cards {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 110px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .legend .pop { display: none; }
+  .legend:hover .lg-stat-inline, .legend:focus-visible .lg-stat-inline { display: block; }
+}
+.lg-stat-inline { display: none; font-size: 0.72rem; color: #f2b8ba; }
+.table-wrap { overflow-x: auto; max-height: 460px; overflow-y: auto; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+th, td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--rule);
+  text-align: right;
+  white-space: nowrap;
+}
+th:first-child, td:first-child { text-align: left; }
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  border-bottom: 2px solid var(--ink);
+}
+td.hl, th.hl { background: #fdf1e3; color: var(--ink); font-weight: 600; }
+
+.notes { margin-top: 20px; max-width: 90ch; }
+
+.legend:hover, .legend:focus-visible { z-index: 5; }
+.kpis { scroll-margin-top: 76px; }
+/* Short screens: let the sidebar scroll with the page so nothing gets cut off */
+@media (max-height: 940px) { .legends { position: static; } }

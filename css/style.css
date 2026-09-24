@@ -1,0 +1,197 @@
+/* Shared styles for the whole site (report + dashboard).
+   Change the colors and fonts here and both pages follow. */
+
+:root {
+  /* Page colors: a vintage-ballpark look (cream paper, navy ink, red stitching) */
+  --paper: #fbf8f1;
+  --card: #ffffff;
+  --ink: #14213d;
+  --ink-soft: #4a5068;
+  --ink-muted: #7a7f92;
+  --rule: #e4dfd2;
+  --accent: #b3272d;
+  --accent-dark: #8e1d22;
+  --navy: #14213d;
+  --field: #1f4d3a;       /* outfield-grass green, used for the scoreboard */
+  --field-dark: #163a2b;
+  --chalk: #f4efe2;       /* scoreboard numbers */
+
+  /* Chart series colors, in fixed order (validated for color-blind safety) */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+
+  --font-head: "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-head);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  margin: 0 0 0.4em;
+}
+
+a { color: var(--accent); }
+
+/* ---------- Navigation bar (shared) ---------- */
+.site-nav {
+  background: var(--navy);
+  border-bottom: 4px solid var(--accent);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.site-nav .inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 56px;
+}
+.site-nav .brand {
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: auto;
+}
+.site-nav .brand span { color: #f2b8ba; }
+.site-nav .brand { display: inline-flex; align-items: center; gap: 10px; }
+.ball-icon { width: 26px; height: 26px; flex: none; }
+.site-nav a.nav-link {
+  color: #d9dcea;
+  text-decoration: none;
+  font-family: var(--font-head);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+}
+.site-nav a.nav-link:hover { color: #fff; }
+.site-nav a.nav-link.active { color: #fff; border-bottom-color: #fff; }
+
+/* ---------- Page layout ---------- */
+main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+}
+@media (max-width: 600px) {
+  main { padding: 20px 16px 56px; }
+  .site-nav .inner { padding: 0 16px; gap: 14px; }
+  .site-nav .brand { font-size: 1rem; gap: 8px; }
+  .site-nav a.nav-link { font-size: 0.82rem; letter-spacing: 0.04em; }
+  .ball-icon { width: 22px; height: 22px; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; }
+  .kpi .value { font-size: 1.5rem; }
+}
+.page-title { font-size: 2rem; margin-top: 8px; }
+.lede { color: var(--ink-soft); max-width: 70ch; margin-top: 0; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+/* ---------- Headline / summary numbers: styled like a ballpark scoreboard ---------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin: 18px 0 32px;
+  padding: 14px;
+  background: var(--field);
+  border: 6px solid var(--field-dark);
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+.kpi {
+  background: var(--field-dark);
+  border-radius: 6px;
+  padding: 12px 14px;
+  text-align: center;
+}
+.kpi .label {
+  font-family: var(--font-head);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #b9d3c3;
+}
+.kpi .value {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  color: var(--chalk);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+
+/* Stitched divider, like the red seams on a baseball */
+.stitch {
+  height: 0;
+  border: 0;
+  border-top: 2px dashed var(--accent);
+  margin: 0 0 16px;
+  opacity: 0.5;
+}
+
+/* ---------- Buttons & form controls ---------- */
+button, select, input {
+  font: inherit;
+  color: inherit;
+}
+select, input[type="number"], input[type="search"] {
+  background: #fff;
+  border: 1px solid #cfc8b8;
+  border-radius: 6px;
+  padding: 6px 8px;
+  min-height: 36px;
+  width: 100%;
+}
+.btn {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-family: var(--font-head);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  min-height: 36px;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--accent-dark); }
+
+.muted { color: var(--ink-muted); font-size: 0.9rem; }
+
+footer.site-footer {
+  border-top: 1px solid var(--rule);
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 20px 16px 40px;
+}

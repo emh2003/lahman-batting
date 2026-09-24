@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Lahman Batting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="img/baseball.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <!-- Reusable baseball graphics (original drawings) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="diamond" viewBox="0 0 200 150">
+        <path d="M100 8 L186 94 L100 146 L14 94 Z" fill="#3f7d4f" opacity="0.18"/>
+        <path d="M100 42 L148 94 L100 128 L52 94 Z" fill="#c9a26b" opacity="0.35"/>
+        <path d="M100 52 L140 94 L100 120 L60 94 Z" fill="none" stroke="#fff" stroke-width="2.5"/>
+        <rect x="96" y="48" width="8" height="8" transform="rotate(45 100 52)" fill="#fff"/>
+        <rect x="136" y="90" width="8" height="8" transform="rotate(45 140 94)" fill="#fff"/>
+        <rect x="56" y="90" width="8" height="8" transform="rotate(45 60 94)" fill="#fff"/>
+        <path d="M95 117 h10 v4 l-5 4 l-5 -4 z" fill="#fff"/>
+        <circle cx="100" cy="92" r="5" fill="#c9a26b"/>
+      </symbol>
+      <symbol id="batter" viewBox="0 0 100 120">
+        <path d="M34 114 h32 l-4 5 h-24 z" fill="#ffffff" stroke="#cfc8b8"/>
+        <g fill="currentColor">
+          <circle cx="50" cy="20" r="10"/>
+          <path d="M41 17 L31 21 L41 24 Z"/>
+          <path d="M43 31 Q51 27 60 32 L61 66 Q53 70 45 67 Z"/>
+          <path d="M61 25.9 L86.7 0.4 Q90.5 -0.5 91.3 5.6 L63 28.1 Z"/>
+          <ellipse cx="30" cy="110" rx="7" ry="3.5"/>
+          <ellipse cx="72" cy="110" rx="7" ry="3.5"/>
+        </g>
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M45 36 L55 32 L62 27" stroke-width="7"/>
+          <path d="M58 36 L63 30 L62 27" stroke-width="7"/>
+          <path d="M48 65 L40 87 L32 108" stroke-width="9"/>
+          <path d="M57 65 L64 87 L70 108" stroke-width="9"/>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <nav class="site-nav">
+    <div class="inner">
+      <a class="brand" href="index.html"><img class="ball-icon" src="img/baseball.svg" alt="">Lahman <span>Batting</span></a>
+      <a class="nav-link" href="index.html">Report</a>
+      <a class="nav-link active" href="dashboard.html">Dashboard</a>
+    </div>
+  </nav>
+
+  <main>
+    <header class="page-head">
+      <div>
+        <h1 class="page-title">Batting Dashboard</h1>
+        <p class="lede">Every batting line in the Lahman Baseball Database, 1871&ndash;2025. Pick filters, choose a measure, and choose what to break it down by. Every number and chart below updates together.</p>
+      </div>
+      <svg class="diamond-art" viewBox="0 0 200 150" aria-hidden="true"><use href="#diamond"/></svg>
+    </header>
+
+    <!-- Filters -->
+    <section class="card filters" aria-label="Filters">
+      <div class="filter">
+        <label for="f-year-from">Season from</label>
+        <select id="f-year-from"></select>
+      </div>
+      <div class="filter">
+        <label for="f-year-to">Season to</label>
+        <select id="f-year-to"></select>
+      </div>
+      <div class="filter">
+        <label for="f-group">League group</label>
+        <select id="f-group"></select>
+      </div>
+      <div class="filter">
+        <label for="f-league">League</label>
+        <select id="f-league"></select>
+      </div>
+      <div class="filter">
+        <label for="f-team">Team (franchise)</label>
+        <select id="f-team"></select>
+      </div>
+      <div class="filter">
+        <label for="f-bats">Bats</label>
+        <select id="f-bats"></select>
+      </div>
+      <div class="filter">
+        <label for="f-country">Birth country</label>
+        <select id="f-country"></select>
+      </div>
+      <div class="filter">
+        <label for="f-player">Player name</label>
+        <input id="f-player" type="search" placeholder="e.g. Ruth">
+      </div>
+      <div class="filter filter-reset">
+        <button id="reset" class="btn" type="button">Reset filters</button>
+      </div>
+    </section>
+
+    <!-- Switches -->
+    <section class="switches" aria-label="Chart switches">
+      <div class="switch">
+        <label for="s-measure">Measure</label>
+        <select id="s-measure"></select>
+      </div>
+      <div class="switch">
+        <label for="s-breakdown">Break down by</label>
+        <select id="s-breakdown"></select>
+      </div>
+      <div class="switch">
+        <label for="s-grain">Time grain</label>
+        <select id="s-grain">
+          <option value="year">Season</option>
+          <option value="decade">Decade</option>
+        </select>
+      </div>
+      <div class="switch">
+        <label for="s-minpa">Min. PA to rank</label>
+        <input id="s-minpa" type="number" min="0" step="50" value="500">
+      </div>
+    </section>
+
+    <p id="status" class="muted" role="status">Loading data&hellip;</p>
+
+    <!-- Summary numbers -->
+    <section class="kpis" id="kpis" aria-label="Summary numbers"></section>
+
+    <div class="layout">
+    <div class="layout-main">
+    <!-- Charts -->
+    <section class="chart-grid">
+      <figure class="card chart-card">
+        <h2 id="t-time">Over time</h2>
+        <div class="stitch" aria-hidden="true"></div>
+        <div class="chart-box"><canvas id="c-time"></canvas></div>
+      </figure>
+      <figure class="card chart-card">
+        <h2 id="t-break">By group</h2>
+        <div class="stitch" aria-hidden="true"></div>
+        <div class="chart-box"><canvas id="c-break"></canvas></div>
+      </figure>
+      <figure class="card chart-card">
+        <h2 id="t-leaders">Top 10 players</h2>
+        <div class="stitch" aria-hidden="true"></div>
+        <div class="chart-box"><canvas id="c-leaders"></canvas></div>
+      </figure>
+      <figure class="card chart-card">
+        <h2 id="t-trend">Top 5 groups over time</h2>
+        <div class="stitch" aria-hidden="true"></div>
+        <div class="chart-box"><canvas id="c-trend"></canvas></div>
+      </figure>
+    </section>
+
+    <!-- Table -->
+    <section class="card table-card">
+      <h2 id="t-table">Numbers behind the view</h2>
+        <div class="stitch" aria-hidden="true"></div>
+      <p class="muted" id="table-note"></p>
+      <div class="table-wrap">
+        <table id="data-table"></table>
+      </div>
+    </section>
+
+    </div><!-- /layout-main -->
+
+    <!-- Legends sidebar: hover (or tab to) a player for career stats; click to filter -->
+    <aside class="legends" aria-labelledby="legends-title">
+      <h2 id="legends-title" class="legends-title">Legends of the Batter&rsquo;s Box</h2>
+      <p class="legends-sub">Hover for stats. Click to filter the dashboard.</p>
+      <div id="legend-cards" class="legend-cards"></div>
+      <p class="legends-note">Career numbers are computed from this data set (all leagues). Negro Leagues records are incomplete.</p>
+    </aside>
+    </div><!-- /layout -->
+
+    <section class="notes muted">
+      <p><strong>How the numbers are computed.</strong> Rates are computed from summed totals, never by averaging each row's rate. AVG = H / AB. OBP = (H + BB + HBP) / (AB + BB + HBP + SF). SLG = TB / AB. OPS = OBP + SLG. HR per 600 PA = HR / PA &times; 600. Strikeout rate = SO / PA, counting only rows where strikeouts were recorded. A blank HBP or SF counts as 0. Rankings (the group bars and the top-10 list) only include groups and players with at least the minimum plate appearances you set.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    Data: Lahman Baseball Database (SABR), CC BY-SA 3.0. Built by Emily.
+  </footer>
+
+  <script src="js/vendor/papaparse.min.js"></script>
+  <script src="js/vendor/chart.umd.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
