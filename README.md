@@ -27,8 +27,12 @@ The data is the **Lahman Baseball Database** by Sean Lahman, now maintained by t
 | `scripts/build_data.py` | Joins the raw tables, drops bad rows, adds derived columns, and writes `data/batting.csv`. |
 | `scripts/check_data.py` | Checks `data/batting.csv` against the project requirements and some well-known stats. |
 
-| `index.html` | The report page (opens at the site URL). *Currently a placeholder.* |
-| `dashboard.html` | The dashboard page: filters, measure and breakdown switches, four charts, a table, and a "Legends" sidebar of player cards (hover for career stats, click to filter). Also holds the inline baseball graphics (diamond and batter silhouette). |
+| `index.html` | The report page (opens at the site URL): "How the Game Changed," with headline numbers, nine findings with charts, and a section about the data. |
+| `css/report.css` | Styles used only on the report page. |
+| `js/report.js` | Draws the report's nine charts from `data/report.json`. |
+| `data/report.json` | Every number and chart series used on the report page. Written by `scripts/report_numbers.py`. |
+| `scripts/report_numbers.py` | Computes every number quoted in the report from `data/batting.csv`, prints them, and writes `data/report.json`. |
+| `dashboard.html` | The dashboard page: filters, measure and breakdown switches, four charts, a table, and "Legends" player cards that alternate between the left and right margins and fade in as you scroll (hover for career stats, click to filter). Also holds the inline baseball graphics (diamond and batter silhouette). |
 | `css/style.css` | Shared styles for both pages: navigation bar, fonts, colors, cards. |
 | `css/dashboard.css` | Styles used only on the dashboard (filter grid, chart cards, table). |
 | `js/dashboard.js` | Loads `data/batting.csv` in the browser, applies the filters, and computes every number, chart, and table on the dashboard, plus the career stats on the "Legends" player cards. |
@@ -51,6 +55,7 @@ Then open <http://localhost:8000/dashboard.html>.
 ```
 uv run scripts/build_data.py
 uv run scripts/check_data.py
+uv run scripts/report_numbers.py
 ```
 
 `build_data.py` needs only `pandas`. `get_raw_data.py` also needs `pylahman==0.7.0`.

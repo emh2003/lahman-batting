@@ -129,8 +129,18 @@
     <!-- Summary numbers -->
     <section class="kpis" id="kpis" aria-label="Summary numbers"></section>
 
+    <!-- Legends: player cards. On wide screens they sit in the page margins,
+         alternating left and right, and fade in and out as you scroll.
+         On narrow screens they sit in a swipeable row here. -->
+    <section class="legends-intro" aria-labelledby="legends-title">
+      <h2 id="legends-title"><img class="ball-icon" src="img/baseball.svg" alt=""> Legends of the Batter&rsquo;s Box</h2>
+      <p>Players appear in the margins as you scroll. Hover over one (or tab to it) for career stats; click to filter the dashboard to that player. Career numbers are computed from this data set, all leagues included. Negro Leagues records are incomplete.</p>
+      <div id="legend-row" class="legend-row"></div>
+    </section>
+
     <div class="layout">
-    <div class="layout-main">
+    <aside class="rail rail-left" id="rail-left" aria-label="Legends, left margin"></aside>
+    <div class="layout-main" id="layout-main">
     <!-- Charts -->
     <section class="chart-grid">
       <figure class="card chart-card">
@@ -166,14 +176,7 @@
     </section>
 
     </div><!-- /layout-main -->
-
-    <!-- Legends sidebar: hover (or tab to) a player for career stats; click to filter -->
-    <aside class="legends" aria-labelledby="legends-title">
-      <h2 id="legends-title" class="legends-title">Legends of the Batter&rsquo;s Box</h2>
-      <p class="legends-sub">Hover for stats. Click to filter the dashboard.</p>
-      <div id="legend-cards" class="legend-cards"></div>
-      <p class="legends-note">Career numbers are computed from this data set (all leagues). Negro Leagues records are incomplete.</p>
-    </aside>
+    <aside class="rail rail-right" id="rail-right" aria-label="Legends, right margin"></aside>
     </div><!-- /layout -->
 
     <section class="notes muted">

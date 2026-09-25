@@ -444,19 +444,16 @@
   const STAT_WORDS = { HR: "home runs", H: "hits", SB: "stolen bases", RBI: "runs batted in",
                        AVG: "batting average", OBP: "on-base percentage" };
 
-  function buildLegends() {
-    const box = $("legend-cards");
-    box.innerHTML = "";
+  // Work out each legend's numbers once, then draw the cards twice: once for the
+  // page margins (wide screens) and once for the swipeable row (narrow screens).
+  function legendData() {
+    const out = [];
     for (const L of LEGENDS) {
       const rows = ROWS.filter((r) => r.pid === L.pid);
       if (!rows.length) continue;
       const career = newAcc();
       rows.forEach((r) => add(career, r));
       const bySeason = groupBy(rows, (r) => r.year);
-      const y0 = Math.min(...rows.map((r) => r.year)), y1 = Math.max(...rows.map((r) => r.year));
-      const name = rows[0].name;
-      const lefty = rows[0].bats === "Left";
-
       const statLines = L.stats.map(([kind, key]) => {
         const m = measureByKey[key];
         if (kind === "career") return { value: m.fmt(m.f(career)), text: "career " + STAT_WORDS[key] };
@@ -468,30 +465,80 @@
         }
         return { value: m.fmt(best), text: STAT_WORDS[key] + " in " + bestYear + " (career best)" };
       });
-
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "legend";
-      btn.dataset.name = name;
-      btn.setAttribute("aria-label", `${name}, ${y0}–${y1}. ` + statLines.map((l) => `${l.value} ${l.text}`).join(". ") + ". Click to filter the dashboard.");
-      btn.innerHTML = `
-        <span class="avatar"><svg viewBox="0 0 100 120" class="${lefty ? "lefty" : ""}" aria-hidden="true"><use href="#batter"/></svg></span>
-        <span class="lg-name">${escapeHtml(name)}</span>
-        <span class="lg-years">${y0}–${y1}</span>
-        <span class="lg-stat-inline">${statLines[0].value} ${statLines[0].text}</span>
-        <span class="pop" aria-hidden="true">
-          <div class="pop-name">${escapeHtml(name)}</div>
-          <div class="pop-meta">${y0}–${y1} · bats ${rows[0].bats.toLowerCase()} · ${rows.length} team-seasons</div>
-          ${statLines.map((l) => `<div class="pop-stat"><b>${l.value}</b><span>${l.text}</span></div>`).join("")}
-        </span>`;
-      btn.addEventListener("click", () => {
-        const on = $("f-player").value === name;
-        $("f-player").value = on ? "" : name;
-        update();
-        if (!on) $("kpis").scrollIntoView({ behavior: "smooth", block: "start" });
+      out.push({
+        name: rows[0].name,
+        bats: rows[0].bats,
+        y0: Math.min(...rows.map((r) => r.year)),
+        y1: Math.max(...rows.map((r) => r.year)),
+        teamSeasons: rows.length,
+        statLines,
       });
-      box.appendChild(btn);
     }
+    return out;
+  }
+
+  function makeLegendCard(d) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "legend";
+    btn.dataset.name = d.name;
+    btn.setAttribute("aria-label", `${d.name}, ${d.y0}–${d.y1}. ` +
+      d.statLines.map((l) => `${l.value} ${l.text}`).join(". ") + ". Click to filter the dashboard.");
+    btn.innerHTML = `
+      <span class="avatar"><svg viewBox="0 0 100 120" class="${d.bats === "Left" ? "lefty" : ""}" aria-hidden="true"><use href="#batter"/></svg></span>
+      <span class="lg-name">${escapeHtml(d.name)}</span>
+      <span class="lg-years">${d.y0}–${d.y1}</span>
+      <span class="lg-stat-inline">${d.statLines[0].value} ${d.statLines[0].text}</span>
+      <span class="pop" aria-hidden="true">
+        <div class="pop-name">${escapeHtml(d.name)}</div>
+        <div class="pop-meta">${d.y0}–${d.y1} · bats ${d.bats.toLowerCase()} · ${d.teamSeasons} team-seasons</div>
+        ${d.statLines.map((l) => `<div class="pop-stat"><b>${l.value}</b><span>${l.text}</span></div>`).join("")}
+      </span>`;
+    btn.addEventListener("click", () => {
+      const on = $("f-player").value === d.name;
+      $("f-player").value = on ? "" : d.name;
+      update();
+      if (!on) $("kpis").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return btn;
+  }
+
+  let railCards = [];
+  function buildLegends() {
+    const data = legendData();
+    const row = $("legend-row");
+    row.innerHTML = "";
+    data.forEach((d) => row.appendChild(makeLegendCard(d)));
+
+    // Margin cards alternate sides: 1st right, 2nd left, 3rd right, ...
+    railCards = data.map((d, i) => {
+      const card = makeLegendCard(d);
+      (i % 2 === 0 ? $("rail-right") : $("rail-left")).appendChild(card);
+      return card;
+    });
+
+    // Fade each card in when it scrolls into view and out when it leaves.
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) e.target.classList.toggle("in-view", e.isIntersecting);
+    }, { threshold: 0.35 });
+    railCards.forEach((c) => io.observe(c));
+
+    // Re-space the cards whenever the charts/table column changes height.
+    new ResizeObserver(placeRailCards).observe($("layout-main"));
+    placeRailCards();
+  }
+
+  // Spread the cards evenly down the length of the charts + table column.
+  function placeRailCards() {
+    const H = $("layout-main").offsetHeight;
+    const cardH = railCards.length ? railCards[0].offsetHeight || 280 : 280;
+    const step = H / Math.max(railCards.length, 1);
+    railCards.forEach((c, i) => {
+      const top = i * step;
+      const fits = top + cardH <= H;           // hide cards that would hang off the end
+      c.style.top = top + "px";
+      c.style.display = fits ? "" : "none";
+    });
   }
 
   function markSelectedLegend() {

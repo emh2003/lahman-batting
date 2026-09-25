@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Report | Lahman Batting</title>
+  <title>How the Game Changed | Lahman Batting</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <link rel="icon" href="img/baseball.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/report.css">
 </head>
 <body>
   <nav class="site-nav">
@@ -19,15 +20,205 @@
     </div>
   </nav>
 
-  <main>
-    <!-- PLACEHOLDER: the report goes here (title, your name, summary,
-         headline numbers, 8+ findings with charts, and the data section). -->
-    <h1 class="page-title">Report coming soon</h1>
-    <p class="lede">By Emily. In the meantime, explore the data on the <a href="dashboard.html">dashboard</a>.</p>
+  <main class="report">
+
+    <!-- ================= Title, author, summary ================= -->
+    <header class="hero">
+      <div class="hero-text">
+        <p class="kicker">A data report on 155 seasons of batting</p>
+        <h1>How the Game Changed</h1>
+        <p class="byline">By Emily &middot; Data: Lahman Baseball Database, 1871&ndash;2025</p>
+        <p class="summary">
+          This report uses the batting table of the Lahman Baseball Database: 128,597 player-seasons from
+          24,011 players, covering every season from 1871 through 2025. Following the AL, the NL, and the
+          19th-century major leagues decade by decade, it finds a game that traded contact for power. Home runs
+          per plate appearance are more than eight times as common as in the 1900s, strikeouts have doubled since
+          the 1950s, and batting averages have fallen to their lowest level since 1968, so that one in three plate
+          appearances now ends without the ball in play. Over the same stretch the league nearly tripled in size,
+          became far more international, and, after the 2023 rule changes, started running again. A final section
+          looks at the Negro Leagues, whose hitters matched the majors before integration.
+        </p>
+      </div>
+      <svg class="hero-art" viewBox="0 0 200 150" aria-hidden="true">
+        <path d="M100 8 L186 94 L100 146 L14 94 Z" fill="#3f7d4f" opacity="0.18"/>
+        <path d="M100 42 L148 94 L100 128 L52 94 Z" fill="#c9a26b" opacity="0.35"/>
+        <path d="M100 52 L140 94 L100 120 L60 94 Z" fill="none" stroke="#fff" stroke-width="2.5"/>
+        <rect x="96" y="48" width="8" height="8" transform="rotate(45 100 52)" fill="#fff"/>
+        <rect x="136" y="90" width="8" height="8" transform="rotate(45 140 94)" fill="#fff"/>
+        <rect x="56" y="90" width="8" height="8" transform="rotate(45 60 94)" fill="#fff"/>
+        <path d="M95 117 h10 v4 l-5 4 l-5 -4 z" fill="#fff"/>
+        <circle cx="100" cy="92" r="5" fill="#c9a26b"/>
+      </svg>
+    </header>
+
+    <!-- ================= Headline numbers ================= -->
+    <section class="kpis" aria-label="Headline numbers">
+      <div class="kpi"><div class="label">Home runs per PA vs. the 1900s</div><div class="value">8.4&times;</div><div class="sub">18.6 vs. 2.2 per 600 PA</div></div>
+      <div class="kpi"><div class="label">Strikeout rate, 2020s</div><div class="value">22.7%</div><div class="sub">up from 11.4% in the 1950s</div></div>
+      <div class="kpi"><div class="label">Batting average, 2022 &amp; 2024</div><div class="value">.243</div><div class="sub">lowest since .237 in 1968</div></div>
+      <div class="kpi"><div class="label">PA by players born abroad</div><div class="value">35.1%</div><div class="sub">2020s, up from 1.1% in the 1930s</div></div>
+      <div class="kpi"><div class="label">Players in 2025</div><div class="value">1,470</div><div class="sub">vs. 526 in 1925</div></div>
+    </section>
+
+    <nav class="toc card" aria-label="Sections">
+      <h2>The nine innings</h2>
+      <ol>
+        <li><a href="#s1">Home runs are eight times as common</a></li>
+        <li><a href="#s2">Strikeouts have doubled</a></li>
+        <li><a href="#s3">Averages hit a 54-year low</a></li>
+        <li><a href="#s4">One in three PAs never reach the field</a></li>
+        <li><a href="#s5">Singles are a shrinking share of hits</a></li>
+        <li><a href="#s6">The 2023 rules brought back the steal</a></li>
+        <li><a href="#s7">A third of the game was born abroad</a></li>
+        <li><a href="#s8">The league nearly tripled in size</a></li>
+        <li><a href="#s9">The Negro Leagues matched the majors</a></li>
+      </ol>
+    </nav>
+
+    <!-- ================= Findings ================= -->
+    <section class="finding card" id="s1">
+      <p class="inning">1st inning</p>
+      <h2>Home runs are more than eight times as common as in the dead-ball era</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>In the 1900s, hitters averaged just 2.2 home runs per 600 plate appearances (roughly one full season for an everyday player). Babe Ruth's era tripled that to 6.2 in the 1920s, and the number has climbed in fits and starts ever since, reaching 18.6 in the 2020s, 8.4 times the 1900s rate. The single-season peak came in 2019, at 21.8 home runs per 600 plate appearances.</p>
+      <p>Because this is a rate per plate appearance, the rise isn't just the result of more teams or longer seasons. Each trip to the plate is far more likely to end in a home run than it used to be.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c1" role="img" aria-label="Bar chart of home runs per 600 plate appearances by decade, rising from 2.2 in the 1900s to 18.6 in the 2020s"></canvas></div>
+        <figcaption>Home runs per 600 plate appearances, by decade. AL/NL and 19th-century majors.</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s2">
+      <p class="inning">2nd inning</p>
+      <h2>Strikeouts have doubled since the 1950s, while walks stayed flat</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>In the 1950s, 11.4% of plate appearances ended in a strikeout. In the 2020s, 22.7% do, twice the rate. The highest season on record is 2020, at 23.4%, though that was a shortened 60-game season. The climb was steady rather than sudden: strikeout rates rose in almost every decade after World War II.</p>
+      <p>Walks tell a different story. The walk rate was 9.3% in the 1950s and 8.5% in the 2020s, so nearly all of the change in how plate appearances end comes from strikeouts, not walks.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c2" role="img" aria-label="Line chart of strikeout rate and walk rate by season since 1910; strikeouts rise from under 10% to about 23%, walks stay between 7% and 10%"></canvas></div>
+        <figcaption>Strikeouts and walks as a share of plate appearances, by season, 1910&ndash;2025. Strikeout rate uses only rows where strikeouts were recorded.</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s3">
+      <p class="inning">3rd inning</p>
+      <h2>Batting averages have fallen to their lowest level since 1968</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>The league batting average peaked at .271 in 1999, at the height of a high-offense era. It has fallen since, to .243 in both 2022 and 2024, the lowest of any season since 1968. That year, known as "the Year of the Pitcher," is also the low point since 1901, at .237. It was .245 in 2025.</p>
+      <p>The long-run swings are large. The best season since 1901 was 1930, when the whole league hit .296. Today's hitters trade average for power: fewer hits, but more of them leave the park.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c3" role="img" aria-label="Line chart of league batting average by season since 1901, with a high of .296 in 1930, a low of .237 in 1968, a peak of .271 in 1999, and .243 in 2022 and 2024"></canvas></div>
+        <figcaption>League batting average (hits &divide; at-bats), by season, 1901&ndash;2025.</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s4">
+      <p class="inning">4th inning</p>
+      <h2>One in three plate appearances now ends without the ball in play</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>A home run, a walk, and a strikeout have one thing in common: the fielders never touch the ball. Analysts call these the "three true outcomes." In the 1950s they made up 22.9% of plate appearances. In the 2020s they make up 34.3%, or about one in every three.</p>
+      <p>This finding ties the first two together. More home runs and more strikeouts, with walks roughly unchanged, add up to a game with noticeably less action for the defense.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c4" role="img" aria-label="Bar chart of the share of plate appearances ending in a home run, walk, or strikeout by decade, rising from about 23% in the 1950s to 34% in the 2020s"></canvas></div>
+        <figcaption>(HR + BB + SO) &divide; plate appearances, by decade, 1910s&ndash;2020s. Uses only rows where strikeouts were recorded.</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s5">
+      <p class="inning">5th inning</p>
+      <h2>Singles have gone from four in five hits to under two in three</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>When hitters do get a hit, it's more likely to go for extra bases than it used to be. In the 1900s, 79.3% of all hits were singles. In the 2020s, 64.4% are. The rest are doubles, triples, and, more and more, home runs.</p>
+      <p>This is the other side of the falling batting average. Hitters now swing for damage and accept more outs in exchange for more extra-base hits.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c5" role="img" aria-label="Bar chart of singles as a share of all hits by decade, falling from about 79% in the 1900s to 64% in the 2020s"></canvas></div>
+        <figcaption>Singles &divide; hits, by decade.</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s6">
+      <p class="inning">6th inning</p>
+      <h2>Stolen bases jumped 41% the year the rules changed</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>Base stealing had been fading. Leaving out the shortened 2020 season, the total fell to 2,213 steals in 2021, the fewest since the league reached 30 teams in 1998. In 2023, MLB introduced larger bases, a pitch clock, and limits on pickoff throws. Steals jumped from 2,486 in 2022 to 3,503 in 2023, a 41% increase in a single season.</p>
+      <p>The increase has held: steals rose again to 3,617 in 2024, the most of any season shown, and there were 3,440 in 2025. This is the clearest case in the data of a rule change reshaping how the game is played almost immediately.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c6" role="img" aria-label="Bar chart of total stolen bases by season from 1998 to 2025, with a jump from 2,486 in 2022 to 3,503 in 2023"></canvas></div>
+        <figcaption>Total stolen bases by season, 1998&ndash;2025 (30 teams every season). 2020 was a 60-game season. 2023 is highlighted.</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s7">
+      <p class="inning">7th inning</p>
+      <h2>A third of plate appearances now go to players born outside the U.S.</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>In the 1870s, about one in ten plate appearances (10.1%) went to players born abroad, mostly in Canada, Ireland, and England. That share bottomed out at 1.2% in the 1920s and 1.1% in the 1930s. By the 1960s that was 13.1%, and in the 2020s it's 35.1%. The Dominican Republic (11.0% of all 2020s plate appearances) and Venezuela (9.5%) lead, followed by Cuba (3.8%) and Puerto Rico (3.0%).</p>
+      <p>The biggest jumps came in the 1990s (+6.2 points) and 2000s (+9.3 points), when teams were expanding their scouting across Latin America.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c7" role="img" aria-label="Bar chart of the share of plate appearances by players born outside the USA by decade, from 1% in the 1920s to 35% in the 2020s"></canvas></div>
+        <figcaption>Share of plate appearances by players born outside the USA, by decade. The Lahman data lists Puerto Rico separately from the USA, so it's counted here as outside.</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s8">
+      <p class="inning">8th inning</p>
+      <h2>The league nearly tripled in size</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>In 1925, 526 different players came to bat for 16 teams. In 2025, 1,470 players did, for 30 teams. Expansion added teams in waves from 1961 to 1998, and each wave shows up as a step in the chart.</p>
+      <p>The number of players has grown faster than the number of teams. More players now get at least one at-bat each season, which fits with clubs moving players between the majors and the minors more often.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c8" role="img" aria-label="Line chart of the number of different players with a batting line each season, from about 500 in the 1920s to about 1,470 in 2025"></canvas></div>
+        <figcaption>Number of different players with a batting line, by season. AL/NL and 19th-century majors. The spikes in 1884, 1890, and 1914&ndash;15 are seasons with a third major league (the Union Association, Players' League, and Federal League).</figcaption>
+      </figure>
+    </section>
+
+    <section class="finding card" id="s9">
+      <p class="inning">9th inning</p>
+      <h2>Before integration, Negro Leagues hitters matched the majors</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <p>In 2020, MLB recognized seven Negro Leagues from 1920 to 1948 as major leagues, and the Lahman data now includes them. Over those seasons, Negro Leagues hitters batted .274, compared with .275 in the AL and NL. Their on-base percentage was .338 (vs. .340) and their OPS was .717 (vs. .728).</p>
+      <p>The records are much less complete: they cover 620,798 plate appearances, compared with 2,776,226 in the AL/NL over the same years, and teams played shorter schedules. Even so, the numbers show players who were shut out of the majors hitting at essentially the same level, until Jackie Robinson's debut in 1947 began to change the game for good.</p>
+      <figure>
+        <div class="chart-box"><canvas id="c9" role="img" aria-label="Line chart comparing batting average by season, 1920 to 1948, for the Negro Leagues and the AL/NL; the two lines track each other closely"></canvas></div>
+        <figcaption>Batting average by season, 1920&ndash;1948: the Negro Leagues vs. the AL/NL.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= About the data ================= -->
+    <section class="finding card data-notes" id="data">
+      <p class="inning">Post-game</p>
+      <h2>About the data</h2>
+      <div class="stitch" aria-hidden="true"></div>
+      <h3>Where it comes from</h3>
+      <p>The data is the batting table of the <a href="https://sabr.org/lahman-database/">Lahman Baseball Database</a>, created by Sean Lahman and now maintained by the Society for American Baseball Research (SABR). This release covers 1871&ndash;2025 and is licensed under CC BY-SA 3.0. Player names, batting hand, and birth country come from the database's People table. Team names and franchise codes come from its Teams table.</p>
+      <h3>What one row is</h3>
+      <p>One row is one player's batting line for one team in one season. A player traded mid-season has one row per team. The clean file, <code>data/batting.csv</code>, has 128,597 rows and 34 columns.</p>
+      <h3>Rows dropped</h3>
+      <p>One of the 128,598 raw rows was dropped: a 1912 record (player <code>tayloci99</code>, team WBS) that lists 0 hits but 1 home run, which can't both be true. Unless a section says otherwise, the findings use only the 117,141 rows in the AL, the NL, and the 19th-century major leagues. The 9th inning also uses the Negro Leagues rows from 1920&ndash;1948.</p>
+      <h3>How the rates are computed</h3>
+      <p>Every rate is computed from summed totals across all the rows in a season or decade, never by averaging each player's own rate. Blank cells mean a stat wasn't recorded and are not treated as zero, except that a blank walk, hit-by-pitch, sacrifice hit, or sacrifice fly counts as 0 when adding up plate appearances, and a blank hit-by-pitch or sacrifice fly counts as 0 in on-base percentage.</p>
+      <ul class="formulas">
+        <li><b>Plate appearances (PA)</b> = AB + BB + HBP + SH + SF</li>
+        <li><b>Batting average</b> = H &divide; AB</li>
+        <li><b>On-base percentage</b> = (H + BB + HBP) &divide; (AB + BB + HBP + SF)</li>
+        <li><b>Slugging</b> = total bases &divide; AB; <b>OPS</b> = OBP + slugging</li>
+        <li><b>HR per 600 PA</b> = HR &divide; PA &times; 600</li>
+        <li><b>Strikeout rate</b> = SO &divide; PA, using only rows where strikeouts were recorded; <b>walk rate</b> = BB &divide; PA</li>
+        <li><b>Three true outcomes</b> = (HR + BB + SO) &divide; PA, using only rows where strikeouts were recorded</li>
+        <li><b>Singles share</b> = singles &divide; hits, where singles = H &minus; 2B &minus; 3B &minus; HR</li>
+        <li><b>Born abroad</b> = birth country is not USA (players with an unknown birth country count as not born abroad)</li>
+      </ul>
+      <h3>Reproducing the numbers</h3>
+      <p><code>scripts/build_data.py</code> builds the clean file from the raw tables. <code>scripts/report_numbers.py</code> computes every number in this report and writes the chart data to <code>data/report.json</code>. You can also check the rate numbers on the <a href="dashboard.html">dashboard</a>: set the league group to "AL/NL and 19th-century majors," pick a measure, and set the time grain to decade or season.</p>
+    </section>
+
   </main>
 
   <footer class="site-footer">
     Data: Lahman Baseball Database (SABR), CC BY-SA 3.0. Built by Emily.
   </footer>
+
+  <script src="js/vendor/chart.umd.js"></script>
+  <script src="js/report.js"></script>
 </body>
 </html>

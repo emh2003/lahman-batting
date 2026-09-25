@@ -37,12 +37,14 @@
 .diamond-art { width: 170px; height: 128px; flex: none; }
 @media (max-width: 700px) { .diamond-art { display: none; } }
 
-/* Main column (charts + table) with the legends sidebar on the right */
+/* Main column (charts + table) with a legends rail in each margin */
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 250px;
+  grid-template-columns: 200px minmax(0, 1fr) 200px;
   gap: 32px;
-  align-items: start;
+  align-items: stretch;
+  overflow-x: clip;   /* cards slide in from just outside the page edge */
+  overflow-clip-margin: 0;
 }
 
 .chart-grid {
@@ -56,126 +58,141 @@
 
 .table-card { margin-top: 32px; padding: 22px 24px; }
 
-@media (max-width: 1100px) {
-  .layout { grid-template-columns: minmax(0, 1fr); }
-  .legends { min-width: 0; }
-  .legends { order: -1; }
-}
 @media (max-width: 560px) {
   .chart-grid { grid-template-columns: 1fr; gap: 20px; }
   .chart-card { padding: 16px; }
   .chart-box { height: 300px; }
 }
 
-/* ---------- Legends sidebar ---------- */
-.legends {
-  position: sticky;
-  top: 76px;
+/* ---------- Legends ---------- */
+.legends-intro {
   background: var(--navy);
   color: #fff;
   border-radius: var(--radius);
-  padding: 18px 16px 16px;
-  border-top: 6px solid var(--accent);
+  border-left: 6px solid var(--accent);
+  padding: 14px 20px;
+  margin-bottom: 32px;
 }
-.legends-title {
+.legends-intro h2 {
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 2px;
-}
-.legends-sub { margin: 0 0 14px; font-size: 0.85rem; color: #c7cbe0; }
-.legends-note { margin: 14px 0 0; font-size: 0.75rem; color: #9ea4c2; line-height: 1.4; }
-.legend-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  align-items: center;
   gap: 10px;
+  margin-bottom: 4px;
 }
+.legends-intro p { margin: 0; font-size: 0.9rem; color: #c7cbe0; max-width: 110ch; }
+
+.rail { position: relative; min-width: 0; }
+
 .legend {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 6px 8px;
-  background: #1d2c4f;
+  gap: 6px;
+  width: 100%;
+  padding: 14px 10px 12px;
+  background: var(--navy);
   border: 1px solid #2c3d66;
-  border-radius: 8px;
+  border-top: 5px solid var(--accent);
+  border-radius: 12px;
   color: #fff;
   cursor: pointer;
   text-align: center;
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+  box-shadow: 0 8px 22px rgba(20, 33, 61, 0.18);
 }
 .legend:hover, .legend:focus-visible {
-  background: #25385f;
   border-color: #f2b8ba;
-  transform: translateY(-2px);
   outline: none;
+  z-index: 5;
 }
-.legend.selected { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
+.legend.selected { box-shadow: 0 0 0 3px var(--accent), 0 8px 22px rgba(20, 33, 61, 0.18); }
 .legend .avatar {
-  width: 78px;
-  height: 90px;
-  border-radius: 8px;
-  background: linear-gradient(var(--paper) 72%, #cfe0d3 72%);
+  width: 150px;
+  height: 172px;
+  border-radius: 10px;
+  background: linear-gradient(var(--paper) 74%, #cfe0d3 74%);
   display: grid;
   place-items: center;
   border: 3px solid #c8322f;
-  padding: 4px 6px 2px;
+  padding: 8px 10px 4px;
 }
 .legend .avatar svg { width: 100%; height: 100%; color: var(--navy); }
 .legend .avatar svg.lefty { transform: scaleX(-1); }
 .legend .lg-name {
   font-family: var(--font-head);
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   letter-spacing: 0.04em;
   line-height: 1.15;
 }
-.legend .lg-years { font-size: 0.72rem; color: #9ea4c2; }
+.legend .lg-years { font-size: 0.8rem; color: #9ea4c2; }
+.lg-stat-inline { display: none; font-size: 0.78rem; color: #f2b8ba; }
 
-/* Hover card with the player's stats */
+/* Cards in the margins: placed by JS, fade and slide in when on screen */
+.rail .legend {
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.rail-left .legend { transform: translateX(-40px); }
+.rail-right .legend { transform: translateX(40px); }
+.rail .legend.in-view { opacity: 1; transform: none; }
+.rail .legend.in-view:hover { transform: translateY(-3px); }
+@media (prefers-reduced-motion: reduce) {
+  .rail .legend, .rail-left .legend, .rail-right .legend { transform: none; transition: opacity 0.2s; }
+}
+
+/* Hover card with the player's stats; opens toward the middle of the page */
 .legend .pop {
   position: absolute;
-  right: calc(100% + 12px);
   top: 50%;
-  transform: translateY(-50%) scale(0.96);
-  width: 220px;
+  width: 240px;
   background: var(--paper);
   color: var(--ink);
   border: 1px solid var(--rule);
-  border-left: 5px solid var(--accent);
   border-radius: 8px;
   box-shadow: 0 10px 28px rgba(20, 33, 61, 0.28);
   padding: 12px 14px;
   text-align: left;
   opacity: 0;
   pointer-events: none;
+  transform: translateY(-50%) scale(0.96);
   transition: opacity 0.12s ease, transform 0.12s ease;
   z-index: 20;
 }
-.legend:hover .pop, .legend:focus-visible .pop {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
-}
-.pop .pop-name { font-family: var(--font-head); font-size: 1.05rem; margin-bottom: 2px; }
-.pop .pop-meta { font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 8px; }
-.pop .pop-stat { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-top: 1px dashed var(--rule); }
-.pop .pop-stat b { font-family: var(--font-head); font-size: 1.15rem; font-weight: 600; font-variant-numeric: tabular-nums; }
-.pop .pop-stat span { font-size: 0.82rem; color: var(--ink-soft); align-self: center; }
+.rail-left .legend .pop { left: calc(100% + 12px); border-left: 5px solid var(--accent); }
+.rail-right .legend .pop { right: calc(100% + 12px); border-right: 5px solid var(--accent); }
+.legend:hover .pop, .legend:focus-visible .pop { opacity: 1; transform: translateY(-50%) scale(1); }
+.pop .pop-name { font-family: var(--font-head); font-size: 1.15rem; margin-bottom: 2px; }
+.pop .pop-meta { font-size: 0.8rem; color: var(--ink-muted); margin-bottom: 8px; }
+.pop .pop-stat { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px dashed var(--rule); }
+.pop .pop-stat b { font-family: var(--font-head); font-size: 1.25rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pop .pop-stat span { font-size: 0.85rem; color: var(--ink-soft); align-self: center; text-align: right; }
 
-/* On narrow screens the sidebar sits above the charts as a scrolling row */
-@media (max-width: 1100px) {
-  .legends { position: static; }
-  .legend-cards {
-    grid-template-columns: none;
+/* Narrow screens: no margins to use, so the cards sit in a swipeable row */
+.legend-row { display: none; }
+@media (max-width: 1180px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .rail { display: none; }
+  .legend-row {
+    display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: 110px;
+    grid-auto-columns: 150px;
+    gap: 12px;
     overflow-x: auto;
+    margin-top: 14px;
     padding-bottom: 6px;
   }
-  .legend .pop { display: none; }
-  .legend:hover .lg-stat-inline, .legend:focus-visible .lg-stat-inline { display: block; }
+  .legend-row .legend { border-color: #2c3d66; box-shadow: none; background: #1d2c4f; }
+  .legend-row .legend .avatar { width: 110px; height: 126px; }
+  .legend-row .legend .pop { display: none; }
+  .legend-row .legend:hover .lg-stat-inline,
+  .legend-row .legend:focus-visible .lg-stat-inline { display: block; }
 }
-.lg-stat-inline { display: none; font-size: 0.72rem; color: #f2b8ba; }
+
 .table-wrap { overflow-x: auto; max-height: 460px; overflow-y: auto; }
 table {
   border-collapse: collapse;
@@ -204,7 +221,4 @@ td.hl, th.hl { background: #fdf1e3; color: var(--ink); font-weight: 600; }
 
 .notes { margin-top: 20px; max-width: 90ch; }
 
-.legend:hover, .legend:focus-visible { z-index: 5; }
 .kpis { scroll-margin-top: 76px; }
-/* Short screens: let the sidebar scroll with the page so nothing gets cut off */
-@media (max-height: 940px) { .legends { position: static; } }

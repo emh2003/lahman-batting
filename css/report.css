@@ -1,0 +1,73 @@
+/* Styles used only on the report page. */
+
+.report { max-width: 980px; }
+
+/* ---------- Title block ---------- */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin: 12px 0 8px;
+}
+.hero-text { flex: 1; min-width: 0; }
+.kicker {
+  font-family: var(--font-head);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  font-size: 0.85rem;
+  margin: 0 0 4px;
+}
+.hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin-bottom: 4px; }
+.byline { color: var(--ink-muted); margin: 0 0 16px; }
+.summary { font-size: 1.1rem; color: var(--ink-soft); margin: 0; max-width: 72ch; }
+.hero-art { width: 200px; height: 150px; flex: none; }
+@media (max-width: 760px) { .hero-art { display: none; } }
+
+/* Headline numbers reuse the scoreboard style from style.css */
+.kpi .sub { font-size: 0.78rem; color: #b9d3c3; margin-top: 2px; }
+
+/* ---------- Table of contents ---------- */
+.toc { margin-bottom: 32px; padding: 18px 24px; }
+.toc h2 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.toc ol {
+  margin: 0;
+  padding-left: 1.4em;
+  columns: 2;
+  column-gap: 32px;
+}
+.toc li { margin: 3px 0; break-inside: avoid; }
+.toc a { color: var(--ink); text-decoration: none; border-bottom: 1px dashed var(--accent); }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 640px) { .toc ol { columns: 1; } }
+
+/* ---------- Finding sections ---------- */
+.finding {
+  margin: 0 0 36px;
+  padding: 26px 30px 22px;
+  scroll-margin-top: 76px;
+}
+@media (max-width: 600px) { .finding { padding: 18px 16px; } }
+.inning {
+  display: inline-block;
+  font-family: var(--font-head);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  color: #fff;
+  background: var(--navy);
+  border-radius: 999px;
+  padding: 3px 12px;
+  margin: 0 0 10px;
+}
+.finding h2 { font-size: clamp(1.35rem, 2.6vw, 1.7rem); }
+.finding p { max-width: 75ch; }
+.finding figure { margin: 22px 0 0; }
+.finding figcaption { color: var(--ink-muted); font-size: 0.85rem; margin-top: 8px; }
+.chart-box { position: relative; height: 360px; }
+@media (max-width: 600px) { .chart-box { height: 280px; } }
+
+.data-notes h3 { font-size: 1.05rem; margin: 18px 0 4px; }
+.data-notes code { background: #f1ece0; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+.formulas { padding-left: 1.2em; }
+.formulas li { margin: 4px 0; }
