@@ -98,7 +98,9 @@
   function countUp(el, to, fmt, ms = 650) {
     const from = el._value == null ? 0 : el._value;
     el._value = to;
-    if (to == null || !isFinite(to) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // No animation if motion is reduced or the tab isn't visible (browsers pause
+    // animations in background tabs, which would leave the number blank).
+    if (to == null || !isFinite(to) || document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       el.textContent = fmt(to);
       return;
     }
