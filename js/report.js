@@ -136,29 +136,167 @@
   }
 
   // ---------------------------------------------------------------------------
-  // 7th-inning stretch: scroll progress through the tall section (0 -> 1)
-  // drives the fan's stretch through the CSS variable --p.
+  // 7th-inning stretch
+  //  * Progress (0 -> 1) comes from how far you've scrolled DOWN through the
+  //    tall section. It only ever increases, so scrolling back up doesn't
+  //    un-stretch the fan. It resets once the section is fully below the
+  //    screen again (you've scrolled back above it), so it can replay.
+  //  * At the end: two neighbors slide in, everyone raises a cup, "Cheers!"
+  //    pops, and confetti falls.
   // ---------------------------------------------------------------------------
+
+  // One fan, drawn in a 520 x 360 box around x = 260. Parts that move get classes:
+  // .torso stretches, .upper (head + arms) rides up, .arm-l / .arm-r rotate.
+  function fanSVG(opts) {
+    const o = Object.assign({ jersey: "j-red", num: "7", cup: false, mouth: "m-smile" }, opts);
+    const cupG = (cls) => `<g class="${cls}">
+        <path d="M280 212 L296 212 L293.5 238 L282.5 238 Z" class="cup"/>
+        <path d="M282 219 L294 219" class="cup-band"/>
+        <ellipse cx="288" cy="212" rx="9" ry="3.4" class="foam"/>
+        <circle cx="284" cy="209.5" r="2.6" class="foam"/><circle cx="291" cy="209" r="3" class="foam"/>
+      </g>`;
+    return `
+      <g class="legs">
+        <rect x="241" y="250" width="17" height="76" rx="8" class="pants"/>
+        <rect x="262" y="250" width="17" height="76" rx="8" class="pants"/>
+        <path d="M230 334 q0 -12 14 -12 h14 v12 z" class="shoe"/>
+        <path d="M290 334 q0 -12 -14 -12 h-14 v12 z" class="shoe"/>
+        <path d="M232 332 h26 M288 332 h-26" class="sole"/>
+      </g>
+      <g class="torso">
+        <path d="M228 190 q0 -22 22 -22 h20 q22 0 22 22 v54 q0 10 -10 10 h-44 q-10 0 -10 -10 z" class="jersey ${o.jersey}"/>
+        <path d="M228 190 q0 -22 22 -22 h20 q22 0 22 22" class="shade"/>
+        <path d="M251 168 L260 184 L269 168" class="collar"/>
+        <path d="M260 184 V244" class="placket"/>
+        <circle cx="260" cy="196" r="1.7" class="btn"/><circle cx="260" cy="210" r="1.7" class="btn"/>
+        <circle cx="260" cy="224" r="1.7" class="btn"/><circle cx="260" cy="238" r="1.7" class="btn"/>
+        <text x="275" y="222" class="num">${o.num}</text>
+        <rect x="228" y="244" width="64" height="8" class="belt"/>
+        <rect x="256" y="244" width="8" height="8" class="buckle"/>
+      </g>
+      <g class="upper">
+        <rect x="253" y="152" width="14" height="20" rx="5" class="skin neck"/>
+        <circle cx="237" cy="142" r="5" class="skin"/><circle cx="283" cy="142" r="5" class="skin"/>
+        <circle cx="260" cy="140" r="22" class="skin head"/>
+        <path d="M239 150 Q260 166 281 150 Q276 160 260 162 Q244 160 239 150 Z" class="jaw-shade"/>
+        <path d="M237 134 Q237 108 260 108 Q283 108 283 134 Z" class="cap"/>
+        <path d="M249 111 Q260 104 271 111" class="cap-seam"/>
+        <path d="M278 131 Q300 129 308 137 Q294 141 278 137 Z" class="brim"/>
+        <circle cx="260" cy="108" r="3" class="cap-btn"/>
+        <circle cx="260" cy="123" r="6" class="logo"/>
+        <path d="M245 139 q5 -4 10 0 M265 139 q5 -4 10 0" class="brow"/>
+        <ellipse cx="250" cy="145" rx="2.4" ry="3" class="eye"/><ellipse cx="270" cy="145" rx="2.4" ry="3" class="eye"/>
+        <circle cx="245" cy="152" r="4" class="cheek"/><circle cx="275" cy="152" r="4" class="cheek"/>
+        <path d="M251 153 Q260 161 269 153" class="mouth ${o.mouth}"/>
+        <path d="M252 152 Q260 164 268 152 Z" class="mouth-open"/>
+        <g class="arm arm-l">
+          <rect x="226" y="198" width="11" height="40" rx="5.5" class="skin"/>
+          <circle cx="231.5" cy="240" r="7" class="skin"/>
+          <path d="M222 190 q0 -14 10 -16 q10 2 10 16 v10 h-20 z" class="sleeve ${o.jersey}"/>
+        </g>
+        <g class="arm arm-r">
+          <rect x="283" y="198" width="11" height="40" rx="5.5" class="skin"/>
+          <circle cx="288.5" cy="240" r="7" class="skin"/>
+          <path d="M278 190 q0 -14 10 -16 q10 2 10 16 v10 h-20 z" class="sleeve ${o.jersey}"/>
+          ${o.cup ? cupG("cup-g") : ""}
+        </g>
+      </g>`;
+  }
+
   function setupStretch() {
     const sec = document.getElementById("stretch");
     if (!sec) return;
-    let ticking = false;
-    const update = () => {
+    const fan = document.getElementById("fan");
+    fan.innerHTML = `
+      <defs>
+        <linearGradient id="g-red" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#e5484d"/><stop offset="1" stop-color="#a8262b"/></linearGradient>
+        <linearGradient id="g-blue" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3f7fe0"/><stop offset="1" stop-color="#1f4fa3"/></linearGradient>
+        <linearGradient id="g-green" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2fa36f"/><stop offset="1" stop-color="#1b6b47"/></linearGradient>
+        <linearGradient id="g-skin" x1="0" x2="1"><stop offset="0" stop-color="#f1cfa8"/><stop offset="1" stop-color="#d9a97c"/></linearGradient>
+        <linearGradient id="g-cup" x1="0" x2="1"><stop offset="0" stop-color="#f4c44e"/><stop offset="1" stop-color="#d99b1c"/></linearGradient>
+        <radialGradient id="g-spot" cx="50%" cy="0%" r="80%"><stop offset="0" stop-color="rgba(255,236,190,0.35)"/><stop offset="1" stop-color="rgba(255,236,190,0)"/></radialGradient>
+      </defs>
+      <ellipse cx="260" cy="190" rx="250" ry="190" fill="url(#g-spot)" class="spot"/>
+      <g class="seats">
+        ${[258, 284, 310].map((y) => `<rect x="10" y="${y}" width="500" height="16" rx="4"/>`).join("")}
+      </g>
+      <ellipse cx="260" cy="334" rx="46" ry="6" class="shadow"/>
+      <g transform="translate(-140 14) scale(0.9)" class="side-pos"><g class="side side-l">${fanSVG({ jersey: "j-blue", num: "", cup: true, mouth: "m-smile" })}</g></g>
+      <g transform="translate(660 14) scale(-0.9 0.9)" class="side-pos"><g class="side side-r">${fanSVG({ jersey: "j-green", num: "", cup: true, mouth: "m-smile" })}</g></g>
+      <g class="main">${fanSVG({ jersey: "j-red", num: "7", cup: true })}</g>
+      <g transform="translate(300 34)"><g class="clink">
+        ${[0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<path d="M0 -12 V-24" transform="rotate(${a})"/>`).join("")}
+      </g></g>`;
+
+    const txt = sec.querySelector(".stretch-text");
+    const canvas = document.getElementById("confetti");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let maxP = 0, celebrated = false, ticking = false;
+
+    function celebrate() {
+      celebrated = true;
+      sec.classList.add("celebrate");
+      txt.textContent = "Ahh, that's better. Cheers! On to the 7th inning.";
+      if (!reduce) confetti(canvas);
+    }
+    function reset() {
+      maxP = 0;
+      celebrated = false;
+      sec.classList.remove("celebrate");
+      sec.style.setProperty("--p", "0");
+      txt.textContent = "Stand up, reach for the sky, and keep scrolling. The 7th inning is coming up.";
+    }
+
+    function update() {
       ticking = false;
       const r = sec.getBoundingClientRect();
-      const total = r.height - window.innerHeight;
-      const raw = total > 0 ? -r.top / total : 0;
-      const p = Math.min(1, Math.max(0, raw));
-      // ease in-out so the stretch feels natural
-      const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      const vh = window.innerHeight;
+      if (r.top > vh) { if (maxP > 0) reset(); return; }   // back above the section
+      const total = r.height - vh;
+      const p = Math.min(1, Math.max(0, total > 0 ? -r.top / total : 0));
+      maxP = Math.max(maxP, p);                       // only ever moves forward
+      const eased = maxP < 0.5 ? 2 * maxP * maxP : 1 - Math.pow(-2 * maxP + 2, 2) / 2;
       sec.style.setProperty("--p", eased.toFixed(4));
-      const txt = sec.querySelector(".stretch-text");
-      txt.textContent = p >= 0.97
-        ? "Ahh, that's better. On to the 7th inning."
-        : "Stand up, reach for the sky, and keep scrolling. The 7th inning is coming up.";
-    };
+
+      if (maxP >= 0.97 && !celebrated) celebrate();
+    }
     window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
     window.addEventListener("resize", update);
     update();
+  }
+
+  // Simple confetti burst on a canvas laid over the fans.
+  function confetti(canvas) {
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    const c = canvas.getContext("2d");
+    c.scale(dpr, dpr);
+    const colors = ["#d2383d", "#3987e5", "#e3b45f", "#f4efe2", "#199e70", "#d55181"];
+    const bits = Array.from({ length: 170 }, () => ({
+      x: w / 2 + (Math.random() - 0.5) * 80,
+      y: h * 0.3,
+      vx: (Math.random() - 0.5) * 11,
+      vy: -Math.random() * 11 - 4,
+      s: 5 + Math.random() * 6,
+      r: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.3,
+      col: colors[(Math.random() * colors.length) | 0],
+    }));
+    const t0 = performance.now();
+    (function frame(t) {
+      c.clearRect(0, 0, w, h);
+      const life = (t - t0) / 3200;
+      bits.forEach((b) => {
+        b.vy += 0.28; b.vx *= 0.99; b.x += b.vx; b.y += b.vy; b.r += b.vr;
+        c.save();
+        c.globalAlpha = Math.max(0, 1 - life);
+        c.translate(b.x, b.y); c.rotate(b.r);
+        c.fillStyle = b.col;
+        c.fillRect(-b.s / 2, -b.s / 4, b.s, b.s / 2);
+        c.restore();
+      });
+      if (life < 1) requestAnimationFrame(frame); else c.clearRect(0, 0, w, h);
+    })(t0);
   }
 })();

@@ -175,45 +175,19 @@
       </figure>
     </section>
 
-    <!-- ================= 7th-inning stretch (scroll-driven animation) ================= -->
+    <!-- ================= 7th-inning stretch (scroll-driven animation) =================
+         Scrolling DOWN through this tall section stretches the fan; scrolling up never
+         un-stretches him. At the end, two neighbors slide in for a cheers and confetti
+         falls. -->
     <section class="stretch" id="stretch" aria-label="Seventh-inning stretch">
       <div class="stretch-stage">
-        <p class="kicker">Between the 6th and 7th</p>
         <h2 class="stretch-title">Seventh-Inning Stretch</h2>
-        <svg class="fan" viewBox="0 0 240 340" aria-hidden="true">
-          <!-- stadium seats behind the fan -->
-          <g class="seats">
-            <rect x="0" y="250" width="240" height="14" rx="3"/>
-            <rect x="0" y="276" width="240" height="14" rx="3"/>
-            <rect x="0" y="302" width="240" height="14" rx="3"/>
-          </g>
-          <!-- legs (stay planted) -->
-          <g class="legs">
-            <rect x="98" y="236" width="16" height="84" rx="7"/>
-            <rect x="126" y="236" width="16" height="84" rx="7"/>
-            <ellipse cx="104" cy="322" rx="14" ry="7"/>
-            <ellipse cx="136" cy="322" rx="14" ry="7"/>
-          </g>
-          <!-- torso: stretches taller as you scroll -->
-          <g class="torso">
-            <rect x="90" y="168" width="60" height="76" rx="16"/>
-            <text x="120" y="222" text-anchor="middle">7</text>
-          </g>
-          <!-- head, cap and arms ride up with the top of the torso -->
-          <g class="upper">
-            <g class="arm arm-l"><rect x="80" y="172" width="13" height="58" rx="6.5"/><circle cx="86.5" cy="232" r="8"/></g>
-            <g class="arm arm-r"><rect x="147" y="172" width="13" height="58" rx="6.5"/><circle cx="153.5" cy="232" r="8"/></g>
-            <rect x="113" y="152" width="14" height="18" rx="4" class="neck"/>
-            <circle cx="120" cy="136" r="24" class="head"/>
-            <path d="M96 132 Q98 104 120 104 Q142 104 144 132 Z" class="cap"/>
-            <path d="M140 128 L164 132 L140 136 Z" class="cap"/>
-            <g class="face">
-              <circle cx="112" cy="138" r="2.6"/><circle cx="128" cy="138" r="2.6"/>
-              <path class="mouth" d="M111 149 Q120 156 129 149"/>
-            </g>
-          </g>
-        </svg>
-        <p class="stretch-text">Stand up, reach for the sky, and keep scrolling. The 7th inning is coming up.</p>
+        <div class="fan-wrap">
+          <svg class="fan" id="fan" viewBox="0 0 520 360" aria-hidden="true"><!-- drawn by js/report.js --></svg>
+          <p class="cheers" aria-hidden="true">Cheers!</p>
+          <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+        </div>
+        <p class="stretch-text" aria-live="polite">Stand up, reach for the sky, and keep scrolling. The 7th inning is coming up.</p>
         <div class="stretch-meter" aria-hidden="true"><span></span></div>
       </div>
     </section>

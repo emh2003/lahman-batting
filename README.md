@@ -27,10 +27,10 @@ The data is the **Lahman Baseball Database** by Sean Lahman, now maintained by t
 | `scripts/build_data.py` | Joins the raw tables, drops bad rows, adds derived columns, and writes `data/batting.csv`. |
 | `scripts/check_data.py` | Checks `data/batting.csv` against the project requirements and some well-known stats. |
 
-| `index.html` | The report page (opens at the site URL): "How the Game Changed," with headline numbers, a clickable "nine innings" scoreboard, nine findings with charts, a scroll-animated seventh-inning stretch, and a section about the data. |
+| `index.html` | The report page (opens at the site URL): "How the Game Changed," with headline numbers, a clickable "nine innings" scoreboard, nine findings with charts, a scroll-animated seventh-inning stretch (with an end-of-stretch celebration), and a section about the data. |
 | `css/report.css` | Styles used only on the report page. |
 | `js/chart-theme.js` | Shared chart styling for both pages: dark-theme colors, gradient fills, the hover crosshair, count-up numbers, and fade-in on scroll. |
-| `js/report.js` | Draws the report's nine charts from `data/report.json`, runs the scoreboard (hover preview, jump links, current-inning highlight), and drives the seventh-inning-stretch animation as you scroll. |
+| `js/report.js` | Draws the report's nine charts from `data/report.json`, runs the scoreboard (hover preview, jump links, current-inning highlight), draws the seventh-inning-stretch fans, and drives that animation as you scroll down (with the end-of-stretch celebration and confetti). |
 | `data/report.json` | Every number and chart series used on the report page. Written by `scripts/report_numbers.py`. |
 | `scripts/report_numbers.py` | Computes every number quoted in the report from `data/batting.csv`, prints them, and writes `data/report.json`. |
 | `dashboard.html` | The dashboard page: filters, measure and breakdown switches, four charts, a table, and "Legends" player cards that alternate between the left and right margins and fade in as you scroll (hover for career stats, click to filter). Also holds the inline baseball graphics (diamond and batter silhouette). |
