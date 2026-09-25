@@ -14,7 +14,9 @@
   const int = (x) => (x == null ? "–" : Math.round(x).toLocaleString("en-US"));
   const one = (x) => (x == null ? "–" : x.toFixed(1));
 
-  revealOnScroll(".finding, .toc");
+  revealOnScroll(".finding, .scoreboard");
+  setupScoreboard();
+  setupStretch();
 
   function options(fmt, { legend = false, yMin } = {}) {
     return {
@@ -100,4 +102,63 @@
         b.innerHTML = '<p class="muted">Chart data could not be loaded (' + err + '). If you opened this file directly, run a local server.</p>';
       });
     });
+
+  // ---------------------------------------------------------------------------
+  // Scoreboard: hover previews an inning, click jumps to it, and the inning
+  // you're currently reading is outlined as you scroll.
+  // ---------------------------------------------------------------------------
+  function setupScoreboard() {
+    const now = document.getElementById("sb-now");
+    const links = [...document.querySelectorAll(".sb-table a.inn")];
+    const cellsFor = (id) => links.filter((a) => a.dataset.target === id).map((a) => a.parentElement);
+    const defaultText = now.textContent;
+
+    links.forEach((a) => {
+      const id = a.dataset.target;
+      const label = links.find((l) => l.dataset.target === id && l.title).title;
+      const n = id === "data" ? "Post-game" : "Inning " + id.slice(1);
+      const on = () => { cellsFor(id).forEach((td) => td.classList.add("hot")); now.textContent = n + ": " + label; };
+      const off = () => { cellsFor(id).forEach((td) => td.classList.remove("hot")); now.textContent = defaultText; };
+      a.addEventListener("mouseenter", on);
+      a.addEventListener("focus", on);
+      a.addEventListener("mouseleave", off);
+      a.addEventListener("blur", off);
+    });
+
+    const sections = [...document.querySelectorAll(".finding[id]")];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        links.forEach((a) => a.parentElement.classList.toggle("current", a.dataset.target === e.target.id));
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    sections.forEach((sec) => io.observe(sec));
+  }
+
+  // ---------------------------------------------------------------------------
+  // 7th-inning stretch: scroll progress through the tall section (0 -> 1)
+  // drives the fan's stretch through the CSS variable --p.
+  // ---------------------------------------------------------------------------
+  function setupStretch() {
+    const sec = document.getElementById("stretch");
+    if (!sec) return;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const r = sec.getBoundingClientRect();
+      const total = r.height - window.innerHeight;
+      const raw = total > 0 ? -r.top / total : 0;
+      const p = Math.min(1, Math.max(0, raw));
+      // ease in-out so the stretch feels natural
+      const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      sec.style.setProperty("--p", eased.toFixed(4));
+      const txt = sec.querySelector(".stretch-text");
+      txt.textContent = p >= 0.97
+        ? "Ahh, that's better. On to the 7th inning."
+        : "Stand up, reach for the sky, and keep scrolling. The 7th inning is coming up.";
+    };
+    window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  }
 })();
