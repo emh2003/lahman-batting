@@ -229,12 +229,11 @@
     return {
       responsive: true,
       maintainAspectRatio: false,
-      animation: false,
       indexAxis: horizontal ? "y" : "x",
       interaction: horizontal ? { mode: "nearest", axis: "y", intersect: false } : { mode: "index", intersect: false },
       plugins: {
         legend: { display: false, labels: { color: INK, boxWidth: 12, boxHeight: 12, usePointStyle: true } },
-        tooltip: { backgroundColor: "#14213d", padding: 10, cornerRadius: 6 },
+        tooltip: {},
       },
       scales: {
         x: { grid: { color: horizontal ? RULE : "transparent" }, ticks: { color: INK_MUTED, maxRotation: 0, autoSkipPadding: 12 }, border: { color: RULE } },
@@ -244,22 +243,20 @@
   }
 
   function makeCharts() {
-    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-    Chart.defaults.font.size = 12;
-
+    const { areaFill, barFill } = window.ChartTheme;
     charts.time = new Chart($("c-time"), {
       type: "line",
-      data: { labels: [], datasets: [{ data: [], borderColor: SERIES[0], backgroundColor: SERIES[0], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, tension: 0.15, spanGaps: true }] },
+      data: { labels: [], datasets: [{ data: [], borderColor: SERIES[0], backgroundColor: areaFill(SERIES[0]), pointBackgroundColor: SERIES[0], fill: true, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 6, tension: 0.25, spanGaps: true }] },
       options: baseOptions(false),
     });
     charts.brk = new Chart($("c-break"), {
       type: "bar",
-      data: { labels: [], datasets: [{ data: [], backgroundColor: SERIES[0], borderRadius: 4, borderSkipped: "start", maxBarThickness: 22 }] },
+      data: { labels: [], datasets: [{ data: [], backgroundColor: barFill(SERIES[0], true), borderRadius: 6, borderSkipped: "start", maxBarThickness: 22 }] },
       options: baseOptions(true),
     });
     charts.leaders = new Chart($("c-leaders"), {
       type: "bar",
-      data: { labels: [], datasets: [{ data: [], backgroundColor: SERIES[1], borderRadius: 4, borderSkipped: "start", maxBarThickness: 22 }] },
+      data: { labels: [], datasets: [{ data: [], backgroundColor: barFill(SERIES[1], true), borderRadius: 6, borderSkipped: "start", maxBarThickness: 22 }] },
       options: baseOptions(true),
     });
     const trendOpts = baseOptions(false);
@@ -279,7 +276,7 @@
     ds.pointRadius = 6;
     ds.pointHoverRadius = 8;
     ds.pointBackgroundColor = color;
-    ds.pointBorderColor = "#fff";
+    ds.pointBorderColor = "#0b1120";
     ds.pointBorderWidth = 2;
     chart.options.scales.x.beginAtZero = !isRate;
     chart.options.scales.x.grace = isRate ? "5%" : 0;
@@ -331,14 +328,18 @@
     const all = newAcc();
     for (const r of rows) add(all, r);
     const kpis = [
-      ["Players", fmtInt(all.players.size)],
-      ["Seasons", fmtInt(all.seasons.size)],
-      ["Plate appearances", fmtInt(all.PA)],
-      ["Home runs", fmtInt(all.HR)],
-      ["Batting average", measureByKey.AVG.fmt(measureByKey.AVG.f(all))],
-      ["OPS", measureByKey.OPS.fmt(measureByKey.OPS.f(all))],
+      ["Players", all.players.size, fmtInt],
+      ["Seasons", all.seasons.size, fmtInt],
+      ["Plate appearances", all.PA, fmtInt],
+      ["Home runs", all.HR, fmtInt],
+      ["Batting average", measureByKey.AVG.f(all), fmtRate3],
+      ["OPS", measureByKey.OPS.f(all), fmtRate3],
     ];
-    $("kpis").innerHTML = kpis.map(([l, v]) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div></div>`).join("");
+    // Build the tiles once, then animate each number to its new value.
+    if (!$("kpis").children.length) {
+      $("kpis").innerHTML = kpis.map(([l]) => `<div class="kpi"><div class="label">${l}</div><div class="value">–</div></div>`).join("");
+    }
+    [...$("kpis").querySelectorAll(".value")].forEach((el, i) => window.ChartTheme.countUp(el, kpis[i][1], kpis[i][2]));
 
     // ---- Chart 1: measure over time
     const timeKey = grain === "year" ? (r) => r.year : (r) => r.decade;
@@ -400,8 +401,8 @@
       return {
         label: c,
         data: timeLabels.map((t) => { const a = byCatTime.get(c + "|" + t); return a ? m.f(a) : null; }),
-        borderColor: col, backgroundColor: col, borderWidth: 2,
-        pointRadius: grain === "decade" ? 4 : 0, pointHoverRadius: 5, tension: 0.15, spanGaps: false,
+        borderColor: col, backgroundColor: col, borderWidth: 2.5,
+        pointRadius: grain === "decade" ? 4 : 0, pointHoverRadius: 6, tension: 0.25, spanGaps: false,
       };
     });
     setTickFormat(charts.trend, "y", m);
@@ -431,15 +432,30 @@
   // Each stat is either a career total/rate or the player's best single season.
   // "best" seasons combine all of a player's stints that year; best-season rates
   // need at least 400 PA.
+  // Photos are hot-linked from Wikimedia Commons (public domain or openly
+  // licensed). Each card credits the photographer and license on its back.
+  // If a photo can't load (e.g. offline), the card falls back to the batter
+  // silhouette drawn in dashboard.html.
+  const COMMONS = (file) => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(file) + "?width=360";
   const LEGENDS = [
-    { pid: "ruthba01", stats: [["career", "HR"], ["best", "HR"]] },
-    { pid: "gibsojo99", stats: [["career", "AVG"], ["career", "HR"]] },
-    { pid: "willite01", stats: [["career", "OBP"], ["best", "AVG"]] },
-    { pid: "robinja02", stats: [["career", "AVG"], ["career", "SB"]] },
-    { pid: "aaronha01", stats: [["career", "HR"], ["career", "RBI"]] },
-    { pid: "henderi01", stats: [["career", "SB"], ["best", "SB"]] },
-    { pid: "suzukic01", stats: [["career", "H"], ["best", "H"]] },
-    { pid: "bondsba01", stats: [["career", "HR"], ["best", "HR"]] },
+    { pid: "ruthba01", color: "#1f4fa3", stats: [["career", "HR"], ["best", "HR"]],
+      photo: { file: "Babe_Ruth2.jpg", credit: "Irwin, La Broad & Pudlin, 1920", license: "Public domain", zoom: 1.6, pos: "50% 12%" } },
+    { pid: "gibsojo99", color: "#b3272d", stats: [["career", "AVG"], ["career", "HR"]],
+      photo: { file: "Josh_Gibson_1931.jpg", credit: "Harrison Studio, 1931", license: "Public domain" } },
+    { pid: "willite01", color: "#b3272d", stats: [["career", "OBP"], ["best", "AVG"]],
+      photo: { file: "Ted_Williams_(cropped).jpg", credit: "Unknown photographer, 1958", license: "Public domain" } },
+    { pid: "robinja02", color: "#1f4fa3", stats: [["career", "AVG"], ["career", "SB"]],
+      photo: { file: "Jackie_Robinson,_NPG_97_135.jpg", credit: "Harry Warnecke et al., 1949, National Portrait Gallery", license: "CC0" } },
+    { pid: "aaronha01", color: "#1f6b4a", stats: [["career", "HR"], ["career", "RBI"]],
+      photo: { file: "Hank_Aaron_1974.jpg", credit: "Unknown photographer, 1974", license: "Public domain" } },
+    { pid: "henderi01", color: "#1f6b4a", stats: [["career", "SB"], ["best", "SB"]],
+      photo: { file: "Rickeyhenderson2002.jpg", credit: "Dlz28 (Wikipedia user), 2002", license: "Public domain" } },
+    { pid: "suzukic01", color: "#1f5d73", stats: [["career", "H"], ["best", "H"]],
+      photo: { file: "Ichiro_Suzuki_(51007034081)_(cropped).jpg", credit: "Jeffrey Hayes, 2011", license: "CC BY 2.0",
+               licenseUrl: "https://creativecommons.org/licenses/by/2.0/" } },
+    { pid: "bondsba01", color: "#c0561f", stats: [["career", "HR"], ["best", "HR"]],
+      photo: { file: "BarryLamar_Bonds.jpg", credit: "druchoy (Flickr), 2005", license: "CC BY-SA 2.0",
+               licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" } },
   ];
   const STAT_WORDS = { HR: "home runs", H: "hits", SB: "stolen bases", RBI: "runs batted in",
                        AVG: "batting average", OBP: "on-base percentage" };
@@ -454,6 +470,9 @@
       const career = newAcc();
       rows.forEach((r) => add(career, r));
       const bySeason = groupBy(rows, (r) => r.year);
+      // The team he batted the most for (by plate appearances) goes on the ribbon.
+      const byTeam = groupBy(rows, (r) => r.teamLabel);
+      const team = [...byTeam.entries()].sort((a, b) => b[1].PA - a[1].PA)[0][0];
       const statLines = L.stats.map(([kind, key]) => {
         const m = measureByKey[key];
         if (kind === "career") return { value: m.fmt(m.f(career)), text: "career " + STAT_WORDS[key] };
@@ -468,6 +487,9 @@
       out.push({
         name: rows[0].name,
         bats: rows[0].bats,
+        team,
+        color: L.color,
+        photo: L.photo,
         y0: Math.min(...rows.map((r) => r.year)),
         y1: Math.max(...rows.map((r) => r.year)),
         teamSeasons: rows.length,
@@ -478,22 +500,50 @@
   }
 
   function makeLegendCard(d) {
-    const btn = document.createElement("button");
-    btn.type = "button";
+    // A div acting as a button (a real <button> can't contain the credit links).
+    const btn = document.createElement("div");
+    btn.setAttribute("role", "button");
+    btn.tabIndex = 0;
     btn.className = "legend";
     btn.dataset.name = d.name;
-    btn.setAttribute("aria-label", `${d.name}, ${d.y0}–${d.y1}. ` +
+    btn.style.setProperty("--frame", d.color);
+    btn.setAttribute("aria-label", `${d.name}, ${d.y0}–${d.y1}, ${d.team}. ` +
       d.statLines.map((l) => `${l.value} ${l.text}`).join(". ") + ". Click to filter the dashboard.");
+    const p = d.photo;
+    const lic = p.licenseUrl ? `<a href="${p.licenseUrl}" target="_blank" rel="noopener" tabindex="-1">${p.license}</a>` : p.license;
     btn.innerHTML = `
-      <span class="avatar"><svg viewBox="0 0 100 120" class="${d.bats === "Left" ? "lefty" : ""}" aria-hidden="true"><use href="#batter"/></svg></span>
-      <span class="lg-name">${escapeHtml(d.name)}</span>
-      <span class="lg-years">${d.y0}–${d.y1}</span>
-      <span class="lg-stat-inline">${d.statLines[0].value} ${d.statLines[0].text}</span>
-      <span class="pop" aria-hidden="true">
-        <div class="pop-name">${escapeHtml(d.name)}</div>
-        <div class="pop-meta">${d.y0}–${d.y1} · bats ${d.bats.toLowerCase()} · ${d.teamSeasons} team-seasons</div>
-        ${d.statLines.map((l) => `<div class="pop-stat"><b>${l.value}</b><span>${l.text}</span></div>`).join("")}
+      <span class="flip" aria-hidden="true">
+        <span class="face front">
+          <span class="photo">
+            <img src="${COMMONS(p.file)}" alt="" loading="lazy" referrerpolicy="no-referrer"
+                 style="${p.pos ? `object-position:${p.pos};` : ""}${p.zoom ? `transform:scale(${p.zoom});transform-origin:${p.pos || "50% 18%"};` : ""}">
+            <span class="badge"></span>
+            <span class="ribbon">${escapeHtml(d.team)}</span>
+          </span>
+          <span class="plate"><span class="nm">${escapeHtml(d.name)}</span><span class="yr">${d.y0}–${d.y1}</span></span>
+        </span>
+        <span class="face back">
+          <span class="bk-name">${escapeHtml(d.name)}</span>
+          <span class="bk-meta">${d.y0}–${d.y1} · bats ${d.bats.toLowerCase()}<br>${d.teamSeasons} team-seasons</span>
+          ${d.statLines.map((l) => `<span class="bk-stat"><b>${l.value}</b><span>${l.text}</span></span>`).join("")}
+          <span class="bk-cta">Click to filter the dashboard</span>
+          <span class="bk-credit">Photo: ${escapeHtml(p.credit)} · ${lic} · <a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(p.file)}" target="_blank" rel="noopener" tabindex="-1">Wikimedia Commons</a></span>
+        </span>
       </span>`;
+    // Fall back to the silhouette if the photo can't load.
+    const img = btn.querySelector("img");
+    img.addEventListener("error", () => {
+      img.replaceWith(Object.assign(document.createElementNS("http://www.w3.org/2000/svg", "svg"), {}));
+      const svg = btn.querySelector(".photo svg");
+      svg.setAttribute("viewBox", "0 0 100 120");
+      if (d.bats === "Left") svg.classList.add("lefty");
+      svg.innerHTML = '<use href="#batter"/>';
+    }, { once: true });
+    // Links on the back of the card open the credit, not the filter.
+    btn.querySelectorAll(".bk-credit a").forEach((a) => a.addEventListener("click", (e) => e.stopPropagation()));
+    btn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+    });
     btn.addEventListener("click", () => {
       const on = $("f-player").value === d.name;
       $("f-player").value = on ? "" : d.name;
@@ -506,6 +556,8 @@
   let railCards = [];
   function buildLegends() {
     const data = legendData();
+    $("photo-credits").innerHTML = "<strong>Player photos</strong> (via Wikimedia Commons): " + data.map((d) =>
+      `${escapeHtml(d.name)}: ${escapeHtml(d.photo.credit)}, ${d.photo.licenseUrl ? `<a href="${d.photo.licenseUrl}">${d.photo.license}</a>` : d.photo.license}`).join("; ") + ".";
     const row = $("legend-row");
     row.innerHTML = "";
     data.forEach((d) => row.appendChild(makeLegendCard(d)));

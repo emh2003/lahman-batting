@@ -2,60 +2,82 @@
    Change the colors and fonts here and both pages follow. */
 
 :root {
-  /* Page colors: a vintage-ballpark look (cream paper, navy ink, red stitching) */
-  --paper: #fbf8f1;
-  --card: #ffffff;
-  --ink: #14213d;
-  --ink-soft: #4a5068;
-  --ink-muted: #7a7f92;
-  --rule: #e4dfd2;
-  --accent: #b3272d;
-  --accent-dark: #8e1d22;
-  --navy: #14213d;
-  --field: #1f4d3a;       /* outfield-grass green, used for the scoreboard */
-  --field-dark: #163a2b;
-  --chalk: #f4efe2;       /* scoreboard numbers */
+  color-scheme: dark;
 
-  /* Chart series colors, in fixed order (validated for color-blind safety) */
-  --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
-  --series-4: #eda100;
-  --series-5: #e87ba4;
+  /* Page colors: a night game. Deep navy "sky", navy cards, red stitching,
+     outfield-green scoreboard. */
+  --paper: #0b1120;        /* page background */
+  --paper-2: #0f1830;      /* slightly raised areas (switch bar, inputs) */
+  --card: #141e36;         /* cards */
+  --card-2: #1a2644;       /* card highlights / hovers */
+  --ink: #eef1f8;          /* main text */
+  --ink-soft: #b9c1d6;     /* body text */
+  --ink-muted: #8993ad;    /* labels, captions */
+  --rule: #27345a;         /* borders and grid lines */
+  --rule-strong: #3a4a78;  /* input borders */
+  --accent: #d2383d;       /* stitching red (fills, borders) */
+  --accent-soft: #f2878b;  /* red for text on dark */
+  --accent-dark: #a82a2f;
+  --navy: #0a1024;         /* nav bar */
+  --field: #1f4d3a;        /* outfield-grass green, used for the scoreboard */
+  --field-dark: #133226;
+  --chalk: #f4efe2;        /* scoreboard numbers */
+  --gold: #e3b45f;         /* small highlights */
+
+  /* Chart series colors, in fixed order (validated for color-blind safety on the dark cards) */
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
 
   --font-head: "Oswald", "Arial Narrow", sans-serif;
   --font-body: "Source Sans 3", "Segoe UI", sans-serif;
-  --radius: 10px;
+  --radius: 14px;
+  --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
+  /* Stadium lights: two soft glows over a faint diamond pattern */
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(900px 500px at 12% -8%, rgba(57, 135, 229, 0.16), transparent 60%),
+    radial-gradient(800px 480px at 92% -4%, rgba(210, 56, 61, 0.13), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 38px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 38px);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 h1, h2, h3 {
   font-family: var(--font-head);
   font-weight: 600;
   letter-spacing: 0.02em;
-  line-height: 1.2;
+  line-height: 1.15;
   margin: 0 0 0.4em;
+  color: var(--ink);
 }
 
-a { color: var(--accent); }
+a { color: var(--accent-soft); }
+::selection { background: var(--accent); color: #fff; }
 
 /* ---------- Navigation bar (shared) ---------- */
 .site-nav {
-  background: var(--navy);
-  border-bottom: 4px solid var(--accent);
+  background: rgba(10, 16, 36, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
+  box-shadow: 0 2px 0 var(--accent);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 30;
 }
 .site-nav .inner {
   max-width: 1440px;
@@ -64,7 +86,7 @@ a { color: var(--accent); }
   display: flex;
   align-items: center;
   gap: 24px;
-  height: 56px;
+  height: 58px;
 }
 .site-nav .brand {
   font-family: var(--font-head);
@@ -72,30 +94,34 @@ a { color: var(--accent); }
   color: #fff;
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   margin-right: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
-.site-nav .brand span { color: #f2b8ba; }
-.site-nav .brand { display: inline-flex; align-items: center; gap: 10px; }
-.ball-icon { width: 26px; height: 26px; flex: none; }
+.site-nav .brand span { color: var(--accent-soft); }
+.ball-icon { width: 26px; height: 26px; flex: none; transition: transform 0.6s ease; }
+.site-nav .brand:hover .ball-icon { transform: rotate(360deg); }
 .site-nav a.nav-link {
-  color: #d9dcea;
+  color: var(--ink-soft);
   text-decoration: none;
   font-family: var(--font-head);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   font-size: 0.95rem;
   padding: 6px 2px;
   border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
 }
 .site-nav a.nav-link:hover { color: #fff; }
-.site-nav a.nav-link.active { color: #fff; border-bottom-color: #fff; }
+.site-nav a.nav-link.active { color: #fff; border-bottom-color: var(--accent); }
 
 /* ---------- Page layout ---------- */
 main {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 28px 24px 72px;
+  padding: 32px 24px 80px;
 }
 @media (max-width: 600px) {
   main { padding: 20px 16px 56px; }
@@ -106,14 +132,26 @@ main {
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; }
   .kpi .value { font-size: 1.5rem; }
 }
+.kicker {
+  font-family: var(--font-head);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent-soft);
+  font-size: 0.85rem;
+  margin: 0 0 6px;
+}
 .page-title { font-size: 2rem; margin-top: 8px; }
 .lede { color: var(--ink-soft); max-width: 70ch; margin-top: 0; }
 
+/* Cards: dark panels with a faint top highlight and a soft shadow */
 .card {
-  background: var(--card);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 40%),
+    var(--card);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   padding: 16px 18px;
+  box-shadow: var(--shadow);
 }
 
 /* ---------- Headline / summary numbers: styled like a ballpark scoreboard ---------- */
@@ -123,23 +161,26 @@ main {
   gap: 10px;
   margin: 18px 0 32px;
   padding: 14px;
-  background: var(--field);
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0) 0 0 / 8px 8px,
+    var(--field);
   border: 6px solid var(--field-dark);
-  border-radius: 12px;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 20px 40px -20px rgba(0,0,0,0.8);
 }
 .kpi {
-  background: var(--field-dark);
-  border-radius: 6px;
+  background: rgba(8, 26, 19, 0.85);
+  border-radius: 8px;
   padding: 12px 14px;
   text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 .kpi .label {
   font-family: var(--font-head);
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #b9d3c3;
+  color: #9fc4ae;
 }
 .kpi .value {
   font-family: var(--font-head);
@@ -147,6 +188,7 @@ main {
   color: var(--chalk);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.03em;
+  text-shadow: 0 0 14px rgba(244, 239, 226, 0.35);   /* scoreboard bulb glow */
 }
 
 /* Stitched divider, like the red seams on a baseball */
@@ -155,7 +197,7 @@ main {
   border: 0;
   border-top: 2px dashed var(--accent);
   margin: 0 0 16px;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 /* ---------- Buttons & form controls ---------- */
@@ -164,27 +206,41 @@ button, select, input {
   color: inherit;
 }
 select, input[type="number"], input[type="search"] {
-  background: #fff;
-  border: 1px solid #cfc8b8;
-  border-radius: 6px;
-  padding: 6px 8px;
-  min-height: 36px;
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1.5px solid var(--rule-strong);
+  border-radius: 8px;
+  padding: 7px 10px;
+  min-height: 38px;
   width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
+select:hover, input[type="number"]:hover, input[type="search"]:hover { border-color: #5065a3; }
+select:focus, input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(210, 56, 61, 0.28);
+}
+select option { background: var(--card); color: var(--ink); }
+input::placeholder { color: var(--ink-muted); }
+
 .btn {
   background: var(--accent);
   color: #fff;
   border: 0;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px 14px;
   font-family: var(--font-head);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   cursor: pointer;
   min-height: 36px;
   white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
 }
 .btn:hover { background: var(--accent-dark); }
+.btn:active { transform: translateY(1px); }
+.btn-sm { font-size: 0.78rem; padding: 5px 12px; min-height: 30px; }
 
 .muted { color: var(--ink-muted); font-size: 0.9rem; }
 
@@ -194,4 +250,12 @@ footer.site-footer {
   font-size: 0.85rem;
   text-align: center;
   padding: 20px 16px 40px;
+}
+
+/* Fade-up when a section scrolls into view (added by JS) */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.shown { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .ball-icon { transition: none; }
 }

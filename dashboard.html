@@ -56,7 +56,8 @@
   <main>
     <header class="page-head">
       <div>
-        <h1 class="page-title">Batting Dashboard</h1>
+        <p class="kicker">Lahman Baseball Database &middot; 1871&ndash;2025</p>
+        <h1 class="page-title dash-title">Batting <span>Dashboard</span></h1>
         <p class="lede">Every batting line in the Lahman Baseball Database, 1871&ndash;2025. Pick filters, choose a measure, and choose what to break it down by. Every number and chart below updates together.</p>
       </div>
       <svg class="diamond-art" viewBox="0 0 200 150" aria-hidden="true"><use href="#diamond"/></svg>
@@ -64,6 +65,10 @@
 
     <!-- Filters -->
     <section class="card filters" aria-label="Filters">
+      <div class="panel-head">
+        <h2>Filters</h2>
+        <button id="reset" class="btn btn-sm" type="button">Reset filters</button>
+      </div>
       <div class="filter">
         <label for="f-year-from">Season from</label>
         <select id="f-year-from"></select>
@@ -96,13 +101,11 @@
         <label for="f-player">Player name</label>
         <input id="f-player" type="search" placeholder="e.g. Ruth">
       </div>
-      <div class="filter filter-reset">
-        <button id="reset" class="btn" type="button">Reset filters</button>
-      </div>
     </section>
 
     <!-- Switches -->
     <section class="switches" aria-label="Chart switches">
+      <h2 class="switches-title">Chart controls</h2>
       <div class="switch">
         <label for="s-measure">Measure</label>
         <select id="s-measure"></select>
@@ -181,15 +184,17 @@
 
     <section class="notes muted">
       <p><strong>How the numbers are computed.</strong> Rates are computed from summed totals, never by averaging each row's rate. AVG = H / AB. OBP = (H + BB + HBP) / (AB + BB + HBP + SF). SLG = TB / AB. OPS = OBP + SLG. HR per 600 PA = HR / PA &times; 600. Strikeout rate = SO / PA, counting only rows where strikeouts were recorded. A blank HBP or SF counts as 0. Rankings (the group bars and the top-10 list) only include groups and players with at least the minimum plate appearances you set.</p>
+      <p id="photo-credits"></p>
     </section>
   </main>
 
   <footer class="site-footer">
-    Data: Lahman Baseball Database (SABR), CC BY-SA 3.0. Built by Emily.
+    Data: Lahman Baseball Database (SABR), CC BY-SA 3.0. Built by Emily Huddleston.
   </footer>
 
   <script src="js/vendor/papaparse.min.js"></script>
   <script src="js/vendor/chart.umd.js"></script>
+  <script src="js/chart-theme.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
 </html>

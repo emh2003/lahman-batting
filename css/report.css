@@ -10,22 +10,24 @@
   margin: 12px 0 8px;
 }
 .hero-text { flex: 1; min-width: 0; }
-.kicker {
-  font-family: var(--font-head);
+.hero h1 {
+  font-size: clamp(2.8rem, 6.5vw, 4.6rem);
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  font-size: 0.85rem;
-  margin: 0 0 4px;
+  letter-spacing: 0.03em;
+  line-height: 0.95;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #ffffff 0%, #ffffff 55%, var(--accent-soft) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-.hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin-bottom: 4px; }
 .byline { color: var(--ink-muted); margin: 0 0 16px; }
 .summary { font-size: 1.1rem; color: var(--ink-soft); margin: 0; max-width: 72ch; }
-.hero-art { width: 200px; height: 150px; flex: none; }
+.hero-art { width: 210px; height: 158px; flex: none; filter: drop-shadow(0 0 26px rgba(63,125,79,0.4)); }
 @media (max-width: 760px) { .hero-art { display: none; } }
 
 /* Headline numbers reuse the scoreboard style from style.css */
-.kpi .sub { font-size: 0.78rem; color: #b9d3c3; margin-top: 2px; }
+.kpi .sub { font-size: 0.78rem; color: #9fc4ae; margin-top: 2px; }
 
 /* ---------- Table of contents ---------- */
 .toc { margin-bottom: 32px; padding: 18px 24px; }
@@ -37,8 +39,9 @@
   column-gap: 32px;
 }
 .toc li { margin: 3px 0; break-inside: avoid; }
-.toc a { color: var(--ink); text-decoration: none; border-bottom: 1px dashed var(--accent); }
-.toc a:hover { color: var(--accent); }
+.toc li::marker { color: var(--accent-soft); font-family: var(--font-head); }
+.toc a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px dashed var(--accent); transition: color 0.15s; }
+.toc a:hover { color: #fff; }
 @media (max-width: 640px) { .toc ol { columns: 1; } }
 
 /* ---------- Finding sections ---------- */
@@ -55,19 +58,35 @@
   letter-spacing: 0.12em;
   font-size: 0.78rem;
   color: #fff;
-  background: var(--navy);
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  box-shadow: 0 4px 14px -4px rgba(210, 56, 61, 0.6);
   border-radius: 999px;
   padding: 3px 12px;
   margin: 0 0 10px;
 }
 .finding h2 { font-size: clamp(1.35rem, 2.6vw, 1.7rem); }
-.finding p { max-width: 75ch; }
+.finding p { max-width: 75ch; color: var(--ink-soft); }
+.finding { position: relative; overflow: hidden; }
+/* big faded inning number in the corner of each finding */
+.finding[data-n]::before {
+  content: attr(data-n);
+  position: absolute;
+  top: -18px;
+  right: 18px;
+  font-family: var(--font-head);
+  font-size: 8rem;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
 .finding figure { margin: 22px 0 0; }
 .finding figcaption { color: var(--ink-muted); font-size: 0.85rem; margin-top: 8px; }
 .chart-box { position: relative; height: 360px; }
 @media (max-width: 600px) { .chart-box { height: 280px; } }
 
 .data-notes h3 { font-size: 1.05rem; margin: 18px 0 4px; }
-.data-notes code { background: #f1ece0; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+.data-notes code { background: var(--paper-2); border: 1px solid var(--rule); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; color: var(--ink); }
+.formulas li { color: var(--ink-soft); }
+.formulas b { color: var(--ink); }
 .formulas { padding-left: 1.2em; }
 .formulas li { margin: 4px 0; }

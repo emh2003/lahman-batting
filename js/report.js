@@ -4,31 +4,26 @@
 (function () {
   "use strict";
 
-  const css = getComputedStyle(document.documentElement);
-  const v = (n) => css.getPropertyValue(n).trim();
-  const BLUE = v("--series-1"), ORANGE = v("--series-2");
-  const INK = v("--ink"), MUTED = v("--ink-muted"), RULE = v("--rule");
-  const MUTED_BAR = "#b9cde6"; // lighter blue for bars that aren't highlighted
+  const { theme, alpha, areaFill, barFill, revealOnScroll } = window.ChartTheme;
+  const [BLUE, ORANGE] = theme.series;
+  const INK = theme.ink, RULE = theme.rule;
+  const MUTED_BAR = alpha(BLUE, 0.35); // dimmed blue for bars that aren't highlighted
 
   const pct = (x, d = 1) => (x == null ? "–" : (x * 100).toFixed(d) + "%");
   const avg = (x) => (x == null ? "–" : x.toFixed(3).replace(/^0/, ""));
   const int = (x) => (x == null ? "–" : Math.round(x).toLocaleString("en-US"));
   const one = (x) => (x == null ? "–" : x.toFixed(1));
 
-  Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-  Chart.defaults.font.size = 12;
-  Chart.defaults.color = MUTED;
+  revealOnScroll(".finding, .toc");
 
   function options(fmt, { legend = false, yMin } = {}) {
     return {
       responsive: true,
       maintainAspectRatio: false,
-      animation: false,
       interaction: { mode: "index", intersect: false },
       plugins: {
         legend: { display: legend, position: "bottom", labels: { color: INK, usePointStyle: true, boxWidth: 10, boxHeight: 10 } },
         tooltip: {
-          backgroundColor: "#14213d", padding: 10, cornerRadius: 6,
           callbacks: { label: (c) => " " + (c.dataset.label ? c.dataset.label + ": " : "") + fmt(c.parsed.y) },
         },
       },
@@ -43,7 +38,7 @@
   const bar = (id, labels, data, fmt, colors) =>
     new Chart(document.getElementById(id), {
       type: "bar",
-      data: { labels, datasets: [{ data, backgroundColor: colors || BLUE, borderRadius: 4, borderSkipped: "start", maxBarThickness: 44 }] },
+      data: { labels, datasets: [{ data, backgroundColor: colors || barFill(BLUE), hoverBackgroundColor: BLUE, borderRadius: 6, borderSkipped: "start", maxBarThickness: 44 }] },
       options: options(fmt),
     });
 
@@ -53,8 +48,11 @@
       data: {
         labels,
         datasets: series.map((s) => ({
-          label: s.label, data: s.data, borderColor: s.color, backgroundColor: s.color,
-          borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, tension: 0.15, spanGaps: false,
+          label: s.label, data: s.data, borderColor: s.color,
+          backgroundColor: series.length === 1 ? areaFill(s.color) : s.color,
+          fill: series.length === 1 ? "start" : false,
+          pointBackgroundColor: s.color,
+          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 6, tension: 0.25, spanGaps: false,
         })),
       },
       options: options(fmt, { legend: series.length > 1, ...opts }),

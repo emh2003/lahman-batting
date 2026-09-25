@@ -2,7 +2,7 @@
 
 A two-page website (a report and an interactive dashboard) built from the batting table of the Lahman Baseball Database.
 
-*Author: Emily*
+*Author: Emily Huddleston*
 
 ## Where the data comes from
 
@@ -29,6 +29,7 @@ The data is the **Lahman Baseball Database** by Sean Lahman, now maintained by t
 
 | `index.html` | The report page (opens at the site URL): "How the Game Changed," with headline numbers, nine findings with charts, and a section about the data. |
 | `css/report.css` | Styles used only on the report page. |
+| `js/chart-theme.js` | Shared chart styling for both pages: dark-theme colors, gradient fills, the hover crosshair, count-up numbers, and fade-in on scroll. |
 | `js/report.js` | Draws the report's nine charts from `data/report.json`. |
 | `data/report.json` | Every number and chart series used on the report page. Written by `scripts/report_numbers.py`. |
 | `scripts/report_numbers.py` | Computes every number quoted in the report from `data/batting.csv`, prints them, and writes `data/report.json`. |
@@ -111,3 +112,20 @@ Rates are computed from **summed totals**, never by averaging each row's rate:
 - Slugging (SLG) = sum(TB) / sum(AB)
 - OPS = OBP + SLG
 - Home-run rate = sum(HR) / sum(PA); strikeout rate = sum(SO) / sum(PA)
+
+## Player photo credits
+
+The "Legends" cards on the dashboard show photos hot-linked from [Wikimedia Commons](https://commons.wikimedia.org/). They're public domain or openly licensed, and each is credited on the back of its card:
+
+| Player | Photo | License |
+|---|---|---|
+| Babe Ruth | Irwin, La Broad & Pudlin, 1920 ([file](https://commons.wikimedia.org/wiki/File:Babe_Ruth2.jpg)) | Public domain |
+| Josh Gibson | Harrison Studio, 1931 ([file](https://commons.wikimedia.org/wiki/File:Josh_Gibson_1931.jpg)) | Public domain |
+| Ted Williams | Unknown photographer, 1958 ([file](https://commons.wikimedia.org/wiki/File:Ted_Williams_(cropped).jpg)) | Public domain |
+| Jackie Robinson | Harry Warnecke et al., 1949, National Portrait Gallery ([file](https://commons.wikimedia.org/wiki/File:Jackie_Robinson,_NPG_97_135.jpg)) | CC0 |
+| Hank Aaron | Unknown photographer, 1974 ([file](https://commons.wikimedia.org/wiki/File:Hank_Aaron_1974.jpg)) | Public domain |
+| Rickey Henderson | Dlz28 (Wikipedia user), 2002 ([file](https://commons.wikimedia.org/wiki/File:Rickeyhenderson2002.jpg)) | Public domain |
+| Ichiro Suzuki | Jeffrey Hayes, 2011 ([file](https://commons.wikimedia.org/wiki/File:Ichiro_Suzuki_(51007034081)_(cropped).jpg)) | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) |
+| Barry Bonds | druchoy (Flickr), 2005 ([file](https://commons.wikimedia.org/wiki/File:BarryLamar_Bonds.jpg)) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) |
+
+The card frames are an original design, not copies of any real baseball-card set.
