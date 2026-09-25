@@ -62,12 +62,13 @@
   // Aggregation
   // ---------------------------------------------------------------------------
   function newAcc() {
-    return { players: new Set(), seasons: new Set(), PA: 0, AB: 0, H: 0, HR: 0, TB: 0, RBI: 0, SB: 0, BB: 0, HBP: 0, SF: 0, SO: 0, PAso: 0 };
+    return { players: new Set(), seasons: new Set(), PA: 0, AB: 0, H: 0, HR: 0, TB: 0, B1: 0, B2: 0, B3: 0, RBI: 0, SB: 0, BB: 0, HBP: 0, SF: 0, SO: 0, PAso: 0 };
   }
   function add(acc, r) {
     acc.players.add(r.pid);
     acc.seasons.add(r.year);
     acc.PA += r.PA; acc.AB += r.AB; acc.H += r.H; acc.HR += r.HR; acc.TB += r.TB;
+    acc.B1 += r.B1; acc.B2 += r.B2; acc.B3 += r.B3;
     acc.BB += r.BB; acc.RBI += r.RBI || 0; acc.SB += r.SB || 0;
     acc.HBP += r.HBP || 0; acc.SF += r.SF || 0;
     if (r.SO != null) { acc.SO += r.SO; acc.PAso += r.PA; }
@@ -128,6 +129,7 @@
         throws: d.throws,
         country: d.birth_country,
         PA: num(d.PA) || 0, AB: num(d.AB) || 0, H: num(d.H) || 0, HR: num(d.HR) || 0, TB: num(d.TB) || 0,
+        B1: num(d["1B"]) || 0, B2: num(d["2B"]) || 0, B3: num(d["3B"]) || 0,
         BB: num(d.BB) || 0, RBI: num(d.RBI), SB: num(d.SB), SO: num(d.SO), HBP: num(d.HBP), SF: num(d.SF),
       }));
       init();
@@ -180,6 +182,7 @@
     $("reset").addEventListener("click", () => resetFilters(true));
 
     makeCharts();
+    window.HitField.init($("hit-field"), $("hf-callout"), $("hf-swing"));
     buildLegends();
     update();
   }
@@ -340,6 +343,9 @@
       $("kpis").innerHTML = kpis.map(([l]) => `<div class="kpi"><div class="label">${l}</div><div class="value">–</div></div>`).join("");
     }
     [...$("kpis").querySelectorAll(".value")].forEach((el, i) => window.ChartTheme.countUp(el, kpis[i][1], kpis[i][2]));
+
+    // ---- Ballpark: share of hits by type in the current view
+    window.HitField.update({ H: all.H, B1: all.B1, B2: all.B2, B3: all.B3, HR: all.HR });
 
     // ---- Chart 1: measure over time
     const timeKey = grain === "year" ? (r) => r.year : (r) => r.decade;

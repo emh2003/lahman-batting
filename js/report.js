@@ -207,6 +207,7 @@
     const sec = document.getElementById("stretch");
     if (!sec) return;
     const fan = document.getElementById("fan");
+    sec.querySelector(".stretch-stage").insertAdjacentHTML("afterbegin", stadiumSVG());
     fan.innerHTML = `
       <defs>
         <linearGradient id="g-red" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#e5484d"/><stop offset="1" stop-color="#a8262b"/></linearGradient>
@@ -258,6 +259,9 @@
       const eased = maxP < 0.5 ? 2 * maxP * maxP : 1 - Math.pow(-2 * maxP + 2, 2) / 2;
       sec.style.setProperty("--p", eased.toFixed(4));
 
+      // The crowd does "the wave" while the stage is on screen.
+      sec.classList.toggle("waving", r.top < vh * 0.6 && r.bottom > vh * 0.4);
+
       if (maxP >= 0.97 && !celebrated) celebrate();
     }
     window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
@@ -298,5 +302,76 @@
       });
       if (life < 1) requestAnimationFrame(frame); else c.clearRect(0, 0, w, h);
     })(t0);
+  }
+
+  // Night-game stadium drawn behind the fans: stars, light towers with beams,
+  // an upper deck full of fans (who do "the wave"), bunting, the outfield wall,
+  // a video board and a flag. Deterministic "random" so it looks the same each load.
+  function stadiumSVG() {
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const stars = Array.from({ length: 70 }, () =>
+      `<circle cx="${(rnd() * 1000).toFixed(0)}" cy="${(rnd() * 250).toFixed(0)}" r="${(0.6 + rnd() * 1.4).toFixed(1)}" class="star" style="animation-delay:${(rnd() * 4).toFixed(2)}s"/>`).join("");
+    const crowdColors = ["#d2383d", "#e9e4d6", "#3987e5", "#e3b45f", "#7a86a8", "#1f6b4a", "#f2878b"];
+    const crowd = [];
+    for (let row = 0; row < 7; row++) {
+      const y = 322 + row * 15;
+      for (let x = 20 + (row % 2) * 7; x < 990; x += 14) {
+        if (rnd() < 0.1) continue;                          // a few empty seats
+        const c = crowdColors[(rnd() * crowdColors.length) | 0];
+        crowd.push(`<g class="crowd" style="animation-delay:${(x / 1000 * 1.6).toFixed(2)}s"><circle cx="${x}" cy="${y}" r="4.6" fill="${c}"/><circle cx="${x}" cy="${y - 6.5}" r="3" class="head"/></g>`);
+      }
+    }
+    const tower = (x, flip) => {
+      const bulbs = [];
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) bulbs.push(`<circle cx="${x - 37 + c * 15}" cy="${97 + r * 12}" r="4" class="bulb"/>`);
+      return `
+        <path d="M${x} 110 L${x + (flip ? -330 : 330)} 700 L${x + (flip ? -110 : 110)} 700 Z" class="beam"/>
+        <path d="M${x - 6} 140 L${x - 14} 470 H${x + 14} L${x + 6} 140 Z" class="tower"/>
+        ${[180, 240, 300, 360, 420].map((y) => `<path d="M${x - 11} ${y} L${x + 11} ${y + 30} M${x + 11} ${y} L${x - 11} ${y + 30}" class="truss"/>`).join("")}
+        <rect x="${x - 48}" y="84" width="96" height="46" rx="4" class="lamp-bank"/>
+        ${bulbs.join("")}`;
+    };
+    const bunting = Array.from({ length: 12 }, (_, i) => {
+      const x = i * 86 + 12;
+      return `<path d="M${x} 428 Q${x + 43} 462 ${x + 86} 428 Z" class="bunt"/>
+              <path d="M${x + 8} 432 Q${x + 43} 454 ${x + 78} 432" class="bunt-w"/>
+              <path d="M${x + 18} 436 Q${x + 43} 448 ${x + 68} 436" class="bunt-b"/>`;
+    }).join("");
+    return `
+      <svg class="stadium" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="st-sky" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#060b1a"/><stop offset="0.55" stop-color="#14224a"/><stop offset="1" stop-color="#1b2c5c"/></linearGradient>
+          <linearGradient id="st-beam" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="rgba(255,244,210,0.22)"/><stop offset="1" stop-color="rgba(255,244,210,0)"/></linearGradient>
+          <linearGradient id="st-deck" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1a2547"/><stop offset="1" stop-color="#0e1630"/></linearGradient>
+          <linearGradient id="st-grass" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1f5a3a"/><stop offset="1" stop-color="#0f2e1f"/></linearGradient>
+        </defs>
+        <rect width="1000" height="700" fill="url(#st-sky)"/>
+        ${stars}
+        <circle cx="820" cy="70" r="26" class="moon"/>
+        ${tower(70, false)}${tower(930, true)}
+        <!-- upper deck with the crowd -->
+        <path d="M0 300 Q500 270 1000 300 V428 H0 Z" fill="url(#st-deck)"/>
+        <path d="M0 300 Q500 270 1000 300" class="deck-lip"/>
+        ${crowd.join("")}
+        ${bunting}
+        <!-- outfield wall + grass -->
+        <rect x="0" y="470" width="1000" height="60" class="wall"/>
+        <text x="500" y="508" class="wall-text" text-anchor="middle">LAHMAN FIELD · EST. 1871</text>
+        <rect x="0" y="530" width="1000" height="170" fill="url(#st-grass)"/>
+        <path d="M0 530 H1000" class="wall-cap"/>
+        <!-- video board -->
+        <g class="board">
+          <rect x="170" y="150" width="210" height="110" rx="6" class="board-frame"/>
+          <rect x="182" y="162" width="186" height="86" rx="3" class="board-screen"/>
+          <text x="275" y="196" text-anchor="middle" class="board-small">INNING 7</text>
+          <text x="275" y="232" text-anchor="middle" class="board-big stretch-word">STRETCH!</text>
+          <text x="275" y="232" text-anchor="middle" class="board-big cheers-word">CHEERS!</text>
+          <path d="M240 260 V300 M310 260 V300" class="board-leg"/>
+        </g>
+        <!-- flag -->
+        <path d="M720 300 V150" class="flagpole"/>
+        <path d="M720 152 Q760 142 800 156 T880 160 V204 Q840 200 800 196 T720 196 Z" class="flag"/>
+      </svg>`;
   }
 })();

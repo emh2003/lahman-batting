@@ -29,11 +29,12 @@ The data is the **Lahman Baseball Database** by Sean Lahman, now maintained by t
 
 | `index.html` | The report page (opens at the site URL): "How the Game Changed," with headline numbers, a clickable "nine innings" scoreboard, nine findings with charts, a scroll-animated seventh-inning stretch (with an end-of-stretch celebration), and a section about the data. |
 | `css/report.css` | Styles used only on the report page. |
+| `js/hit-field.js` | The interactive ballpark at the top of the dashboard: shows the share of hits that are singles, doubles, triples and home runs in the current view, and lets you click the field (or press Swing) to hit a ball. |
 | `js/chart-theme.js` | Shared chart styling for both pages: dark-theme colors, gradient fills, the hover crosshair, count-up numbers, and fade-in on scroll. |
 | `js/report.js` | Draws the report's nine charts from `data/report.json`, runs the scoreboard (hover preview, jump links, current-inning highlight), draws the seventh-inning-stretch fans, and drives that animation as you scroll down (with the end-of-stretch celebration and confetti). |
 | `data/report.json` | Every number and chart series used on the report page. Written by `scripts/report_numbers.py`. |
 | `scripts/report_numbers.py` | Computes every number quoted in the report from `data/batting.csv`, prints them, and writes `data/report.json`. |
-| `dashboard.html` | The dashboard page: filters, measure and breakdown switches, four charts, a table, and "Legends" player cards that alternate between the left and right margins and fade in as you scroll (hover for career stats, click to filter). Also holds the inline baseball graphics (diamond and batter silhouette). |
+| `dashboard.html` | The dashboard page: an interactive ballpark, filters, measure and breakdown switches, four charts, a table, and "Legends" player cards that alternate between the left and right margins and fade in as you scroll (hover for career stats, click to filter). Also holds the inline baseball graphics (diamond and batter silhouette). |
 | `css/style.css` | Shared styles for both pages: navigation bar, fonts, colors, cards. |
 | `css/dashboard.css` | Styles used only on the dashboard (filter grid, chart cards, table). |
 | `js/dashboard.js` | Loads `data/batting.csv` in the browser, applies the filters, and computes every number, chart, and table on the dashboard, plus the career stats on the "Legends" player cards. |

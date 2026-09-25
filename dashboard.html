@@ -15,16 +15,6 @@
   <!-- Reusable baseball graphics (original drawings) -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <symbol id="diamond" viewBox="0 0 200 150">
-        <path d="M100 8 L186 94 L100 146 L14 94 Z" fill="#3f7d4f" opacity="0.18"/>
-        <path d="M100 42 L148 94 L100 128 L52 94 Z" fill="#c9a26b" opacity="0.35"/>
-        <path d="M100 52 L140 94 L100 120 L60 94 Z" fill="none" stroke="#fff" stroke-width="2.5"/>
-        <rect x="96" y="48" width="8" height="8" transform="rotate(45 100 52)" fill="#fff"/>
-        <rect x="136" y="90" width="8" height="8" transform="rotate(45 140 94)" fill="#fff"/>
-        <rect x="56" y="90" width="8" height="8" transform="rotate(45 60 94)" fill="#fff"/>
-        <path d="M95 117 h10 v4 l-5 4 l-5 -4 z" fill="#fff"/>
-        <circle cx="100" cy="92" r="5" fill="#c9a26b"/>
-      </symbol>
       <symbol id="batter" viewBox="0 0 100 120">
         <path d="M34 114 h32 l-4 5 h-24 z" fill="#ffffff" stroke="#cfc8b8"/>
         <g fill="currentColor">
@@ -60,7 +50,16 @@
         <h1 class="page-title dash-title">Batting <span>Dashboard</span></h1>
         <p class="lede">Every batting line in the Lahman Baseball Database, 1871&ndash;2025. Pick filters, choose a measure, and choose what to break it down by. Every number and chart below updates together.</p>
       </div>
-      <svg class="diamond-art" viewBox="0 0 200 150" aria-hidden="true"><use href="#diamond"/></svg>
+      <!-- Interactive ballpark: zone labels show the share of hits (1B/2B/3B/HR)
+           in the current view; click the field or press Swing to hit a ball. -->
+      <figure class="ballpark" aria-labelledby="hf-cap">
+        <svg id="hit-field" viewBox="0 0 400 300" role="img" aria-label="Ballpark showing the share of hits that are singles, doubles, triples and home runs in the current view. Click the field to hit a ball."></svg>
+        <figcaption>
+          <span id="hf-cap" class="hf-cap">Take a swing: click the field</span>
+          <button id="hf-swing" class="btn btn-sm" type="button">Swing</button>
+        </figcaption>
+        <p id="hf-callout" class="hf-callout" aria-live="polite">Zone labels show each hit type's share of all hits in this view.</p>
+      </figure>
     </header>
 
     <!-- Filters -->
@@ -182,7 +181,8 @@
     <aside class="rail rail-right" id="rail-right" aria-label="Legends, right margin"></aside>
     </div><!-- /layout -->
 
-    <section class="notes muted">
+    <section class="notes" aria-label="Notes">
+      <h2 class="notes-title">Notes</h2>
       <p><strong>How the numbers are computed.</strong> Rates are computed from summed totals, never by averaging each row's rate. AVG = H / AB. OBP = (H + BB + HBP) / (AB + BB + HBP + SF). SLG = TB / AB. OPS = OBP + SLG. HR per 600 PA = HR / PA &times; 600. Strikeout rate = SO / PA, counting only rows where strikeouts were recorded. A blank HBP or SF counts as 0. Rankings (the group bars and the top-10 list) only include groups and players with at least the minimum plate appearances you set.</p>
       <p id="photo-credits"></p>
     </section>
@@ -195,6 +195,7 @@
   <script src="js/vendor/papaparse.min.js"></script>
   <script src="js/vendor/chart.umd.js"></script>
   <script src="js/chart-theme.js"></script>
+  <script src="js/hit-field.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
 </html>
