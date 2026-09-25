@@ -130,3 +130,28 @@ The "Legends" cards on the dashboard show photos hot-linked from [Wikimedia Comm
 | Barry Bonds | druchoy (Flickr), 2005 ([file](https://commons.wikimedia.org/wiki/File:BarryLamar_Bonds.jpg)) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) |
 
 The card frames are an original design, not copies of any real baseball-card set.
+
+The batting game uses the photos above plus these, also from Wikimedia Commons:
+
+| Player | Photo | License |
+|---|---|---|
+| Albert Pujols | Rafael Amado Deras, 2006 ([file](https://commons.wikimedia.org/wiki/File:Albert_Pujols_%28MLB_All-Star_Game_July_11,_2006%29.jpg)) | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) |
+| Alex Rodriguez | Keith Allison, 2007 ([file](https://commons.wikimedia.org/wiki/File:Alex_Rodriguez_by_Keith_Allison.jpg)) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) |
+| Willie Mays | Unknown photographer, 1955 ([file](https://commons.wikimedia.org/wiki/File:Willie_Mays_%281955%29_%28cropped%29.jpg)) | Public domain |
+| Ken Griffey Jr. | Keith Allison, 2009 ([file](https://commons.wikimedia.org/wiki/File:Ken_Griffey,_Jr._June_2009_%28cropped%29.jpg)) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) |
+| Jim Thome | Erik Drost, 2015 ([file](https://commons.wikimedia.org/wiki/File:Jim_Thome_%2818421174923%29.jpg)) | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) |
+| Sammy Sosa | mr609sosa (Flickr), 2012 ([file](https://commons.wikimedia.org/wiki/File:Sammy_Sosa_2012_%28cropped%29.jpg)) | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) |
+| Frank Robinson | Unknown photographer, 1961 ([file](https://commons.wikimedia.org/wiki/File:Frank_Robinson_1961.jpg)) | Public domain |
+| Mark McGwire | Keith Allison, 2011 ([file](https://commons.wikimedia.org/wiki/File:Mark_McGwire_on_June_29,_2011.jpg)) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) |
+| Harmon Killebrew | Unknown photographer, 1962 ([file](https://commons.wikimedia.org/wiki/File:Harmon_Killebrew_1962.png)) | Public domain |
+| Pete Rose | Unknown photographer, 1963 ([file](https://commons.wikimedia.org/wiki/File:Pete_Rose_%28cropped%29.jpg)) | Public domain |
+| Ty Cobb | International Film Service, 1913 ([file](https://commons.wikimedia.org/wiki/File:1913_Ty_Cobb_portrait_photo.png)) | Public domain |
+| Stan Musial | Jay Publishing, 1957 ([file](https://commons.wikimedia.org/wiki/File:Stan_Musial_-_St._Louis_Cardinals_-_1957.jpg)) | Public domain |
+| Tris Speaker | Bain News Service, 1912 ([file](https://commons.wikimedia.org/wiki/File:Tris_Speaker.jpg)) | Public domain |
+| Derek Jeter | D. Benjamin Miller, 2024 ([file](https://commons.wikimedia.org/wiki/File:Derek_Jeter_during_MLB_on_Fox_pre-game_show,_October_16,_2024_-_001_%28cropped%29.jpg)) | CC0 |
+| Cap Anson | Stevens, Chicago, 1888 ([file](https://commons.wikimedia.org/wiki/File:Cap_Anson,_Spaulding_Cabinet_Photo,_1888.png)) | Public domain |
+| Honus Wagner | Chicago Daily News, 1903 ([file](https://commons.wikimedia.org/wiki/File:Honus_Wagner_%28crop%29.JPG)) | Public domain |
+| Carl Yastrzemski | Unknown photographer, 1966 ([file](https://commons.wikimedia.org/wiki/File:Carl_Yastrzemski_1966.jpg)) | Public domain |
+| Paul Molitor | Paul Morse, White House, 2005 ([file](https://commons.wikimedia.org/wiki/File:Paul_Molitor_white_house.jpg)) | Public domain |
+| Eddie Collins | Bain News Service, 1911 ([file](https://commons.wikimedia.org/wiki/File:Eddie_Collins_1911.jpg)) | Public domain |
+

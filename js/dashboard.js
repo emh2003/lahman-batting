@@ -605,6 +605,30 @@
   // top 12 career home-run hitters and top 12 career hit leaders (3,000+ AB).
   // Career numbers use every row for the player (all leagues), not the filters.
   // ---------------------------------------------------------------------------
+  // Photos for the other batters in the game (Wikimedia Commons; public domain or
+  // openly licensed). Credited at the bottom of the page and in the README.
+  const GAME_PHOTOS = {
+    pujolal01: {"file": "Albert_Pujols_(MLB_All-Star_Game_July_11,_2006).jpg", "credit": "Rafael Amado Deras, 2006", "license": "CC BY 2.0", "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"},
+    rodrial01: {"file": "Alex_Rodriguez_by_Keith_Allison.jpg", "credit": "Keith Allison, 2007", "license": "CC BY-SA 2.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/"},
+    mayswi01: {"file": "Willie_Mays_(1955)_(cropped).jpg", "credit": "Unknown photographer, 1955", "license": "Public domain"},
+    griffke02: {"file": "Ken_Griffey,_Jr._June_2009_(cropped).jpg", "credit": "Keith Allison, 2009", "license": "CC BY-SA 2.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/"},
+    thomeji01: {"file": "Jim_Thome_(18421174923).jpg", "credit": "Erik Drost, 2015", "license": "CC BY 2.0", "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"},
+    sosasa01: {"file": "Sammy_Sosa_2012_(cropped).jpg", "credit": "mr609sosa (Flickr), 2012", "license": "CC BY 2.0", "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"},
+    robinfr02: {"file": "Frank_Robinson_1961.jpg", "credit": "Unknown photographer, 1961", "license": "Public domain"},
+    mcgwima01: {"file": "Mark_McGwire_on_June_29,_2011.jpg", "credit": "Keith Allison, 2011", "license": "CC BY-SA 2.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/"},
+    killeha01: {"file": "Harmon_Killebrew_1962.png", "credit": "Unknown photographer, 1962", "license": "Public domain"},
+    rosepe01: {"file": "Pete_Rose_(cropped).jpg", "credit": "Unknown photographer, 1963", "license": "Public domain"},
+    cobbty01: {"file": "1913_Ty_Cobb_portrait_photo.png", "credit": "International Film Service, 1913", "license": "Public domain"},
+    musiast01: {"file": "Stan_Musial_-_St._Louis_Cardinals_-_1957.jpg", "credit": "Jay Publishing, 1957", "license": "Public domain"},
+    speaktr01: {"file": "Tris_Speaker.jpg", "credit": "Bain News Service, 1912", "license": "Public domain"},
+    jeterde01: {"file": "Derek_Jeter_during_MLB_on_Fox_pre-game_show,_October_16,_2024_-_001_(cropped).jpg", "credit": "D. Benjamin Miller, 2024", "license": "CC0"},
+    ansonca01: {"file": "Cap_Anson,_Spaulding_Cabinet_Photo,_1888.png", "credit": "Stevens, Chicago, 1888", "license": "Public domain"},
+    wagneho01: {"file": "Honus_Wagner_(crop).JPG", "credit": "Chicago Daily News, 1903", "license": "Public domain"},
+    yastrca01: {"file": "Carl_Yastrzemski_1966.jpg", "credit": "Unknown photographer, 1966", "license": "Public domain"},
+    molitpa01: {"file": "Paul_Molitor_white_house.jpg", "credit": "Paul Morse, White House, 2005", "license": "Public domain"},
+    collied01: {"file": "Eddie_Collins_1911.jpg", "credit": "Bain News Service, 1911", "license": "Public domain"},
+  };
+
   function gamePlayers() {
     const byPid = groupBy(ROWS, (r) => r.pid);
     const rowsBy = new Map();
@@ -612,7 +636,14 @@
     const eligible = [...byPid.entries()].filter(([, a]) => a.AB >= 3000);
     const top = (key) => eligible.sort((x, y) => y[1][key] - x[1][key]).slice(0, 12).map(([pid]) => pid);
     const legendPhoto = new Map(LEGENDS.map((L) => [L.pid, L.photo]));
+    const photoFor = (pid) => legendPhoto.get(pid) || GAME_PHOTOS[pid] || null;
     const pids = [...new Set([...LEGENDS.map((L) => L.pid), ...top("HR"), ...top("H")])];
+    // Credit the game-only photos (the Legends' photos are credited with the cards).
+    const credits = pids.filter((pid) => byPid.has(pid) && !legendPhoto.has(pid) && GAME_PHOTOS[pid]).map((pid) => {
+      const ph = GAME_PHOTOS[pid], name = rowsBy.get(pid)[0].name;
+      return `${escapeHtml(name)}: ${escapeHtml(ph.credit)}, ${ph.licenseUrl ? `<a href="${ph.licenseUrl}">${ph.license}</a>` : ph.license}`;
+    });
+    $("game-credits").innerHTML = "<strong>Batting game photos</strong> (via Wikimedia Commons): " + credits.join("; ") + ".";
     return pids.filter((pid) => byPid.has(pid)).map((pid) => {
       const a = byPid.get(pid), rows = rowsBy.get(pid);
       const byTeam = groupBy(rows, (r) => r.teamLabel);
@@ -622,7 +653,7 @@
       const key = hrShare > 0.12 ? "HR" : "H";            // power hitters: best HR season; others: best hits season
       let best = 0, bestYear = null;
       for (const [yr, s] of bySeason) if (s[key] > best) { best = s[key]; bestYear = yr; }
-      const photo = legendPhoto.get(pid);
+      const photo = photoFor(pid);
       return {
         name: rows[0].name,
         bats: rows[0].bats,
