@@ -357,7 +357,6 @@
         ${bunting}
         <!-- outfield wall + grass -->
         <rect x="0" y="470" width="1000" height="60" class="wall"/>
-        <text x="500" y="508" class="wall-text" text-anchor="middle">LAHMAN FIELD · EST. 1871</text>
         <rect x="0" y="530" width="1000" height="170" fill="url(#st-grass)"/>
         <path d="M0 530 H1000" class="wall-cap"/>
         <!-- video board -->

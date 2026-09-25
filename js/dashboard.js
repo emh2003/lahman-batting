@@ -182,7 +182,7 @@
     $("reset").addEventListener("click", () => resetFilters(true));
 
     makeCharts();
-    window.HitField.init($("hit-field"), $("hf-callout"), $("hf-swing"));
+    window.HitField.init({ small: $("hit-field"), openBtn: $("hf-play"), players: gamePlayers() });
     buildLegends();
     update();
   }
@@ -596,6 +596,45 @@
       const fits = top + cardH <= H;           // hide cards that would hang off the end
       c.style.top = top + "px";
       c.style.display = fits ? "" : "none";
+    });
+  }
+
+
+  // ---------------------------------------------------------------------------
+  // Batters for the "Step Up to the Plate" game: the eight Legends plus the
+  // top 12 career home-run hitters and top 12 career hit leaders (3,000+ AB).
+  // Career numbers use every row for the player (all leagues), not the filters.
+  // ---------------------------------------------------------------------------
+  function gamePlayers() {
+    const byPid = groupBy(ROWS, (r) => r.pid);
+    const rowsBy = new Map();
+    ROWS.forEach((r) => { if (!rowsBy.has(r.pid)) rowsBy.set(r.pid, []); rowsBy.get(r.pid).push(r); });
+    const eligible = [...byPid.entries()].filter(([, a]) => a.AB >= 3000);
+    const top = (key) => eligible.sort((x, y) => y[1][key] - x[1][key]).slice(0, 12).map(([pid]) => pid);
+    const legendPhoto = new Map(LEGENDS.map((L) => [L.pid, L.photo]));
+    const pids = [...new Set([...LEGENDS.map((L) => L.pid), ...top("HR"), ...top("H")])];
+    return pids.filter((pid) => byPid.has(pid)).map((pid) => {
+      const a = byPid.get(pid), rows = rowsBy.get(pid);
+      const byTeam = groupBy(rows, (r) => r.teamLabel);
+      const team = [...byTeam.entries()].sort((x, y) => y[1].PA - x[1].PA)[0][0];
+      const bySeason = groupBy(rows, (r) => r.year);
+      const hrShare = a.H ? a.HR / a.H : 0;
+      const key = hrShare > 0.12 ? "HR" : "H";            // power hitters: best HR season; others: best hits season
+      let best = 0, bestYear = null;
+      for (const [yr, s] of bySeason) if (s[key] > best) { best = s[key]; bestYear = yr; }
+      const photo = legendPhoto.get(pid);
+      return {
+        name: rows[0].name,
+        bats: rows[0].bats,
+        team,
+        y0: Math.min(...rows.map((r) => r.year)),
+        y1: Math.max(...rows.map((r) => r.year)),
+        H: a.H, HR: a.HR, AB: a.AB,
+        avg: a.AB ? a.H / a.AB : 0,
+        hrOdds: Math.min(0.95, hrShare * 3.5),
+        note: `Career best: ${fmtInt(best)} ${key === "HR" ? "home runs" : "hits"} in ${bestYear}.`,
+        photo: photo ? COMMONS(photo.file) : null,
+      };
     });
   }
 

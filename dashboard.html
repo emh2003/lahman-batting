@@ -50,15 +50,16 @@
         <h1 class="page-title dash-title">Batting <span>Dashboard</span></h1>
         <p class="lede">Every batting line in the Lahman Baseball Database, 1871&ndash;2025. Pick filters, choose a measure, and choose what to break it down by. Every number and chart below updates together.</p>
       </div>
-      <!-- Interactive ballpark: zone labels show the share of hits (1B/2B/3B/HR)
-           in the current view; click the field or press Swing to hit a ball. -->
+      <!-- Ballpark: zone labels show the share of hits (1B/2B/3B/HR) in the current
+           view. Click it (or press Play ball) to open the batting game below. -->
       <figure class="ballpark" aria-labelledby="hf-cap">
-        <svg id="hit-field" viewBox="0 0 400 300" role="img" aria-label="Ballpark showing the share of hits that are singles, doubles, triples and home runs in the current view. Click the field to hit a ball."></svg>
+        <svg id="hit-field" viewBox="0 0 400 300" role="button" tabindex="0"
+             aria-label="Ballpark showing each hit type's share of hits in the current view. Press to open the batting game."></svg>
         <figcaption>
-          <span id="hf-cap" class="hf-cap">Take a swing: click the field</span>
-          <button id="hf-swing" class="btn btn-sm" type="button">Swing</button>
+          <span id="hf-cap" class="hf-cap">Share of hits by type, current view</span>
+          <button id="hf-play" class="btn btn-sm" type="button">Play ball</button>
         </figcaption>
-        <p id="hf-callout" class="hf-callout" aria-live="polite">Zone labels show each hit type's share of all hits in this view.</p>
+        <p class="hf-callout">Click the field to step up to the plate.</p>
       </figure>
     </header>
 
@@ -187,6 +188,63 @@
       <p id="photo-credits"></p>
     </section>
   </main>
+
+
+  <!-- ================= Batting game (pop-up on the dashboard page) ================= -->
+  <div class="game-modal" id="game" hidden role="dialog" aria-modal="true" aria-labelledby="game-title">
+    <div class="game-panel">
+      <button class="game-close" id="game-close" type="button" aria-label="Close the game">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="game-head">
+        <p class="kicker">Batting game</p>
+        <h2 id="game-title">Step Up to the Plate</h2>
+      </div>
+      <div class="game-grid">
+        <div class="game-field-wrap">
+          <svg id="game-field" viewBox="0 0 400 300" role="img" aria-label="Ballpark. Click where you want to hit the ball."></svg>
+          <div class="game-actions">
+            <button class="btn btn-sm" id="game-swing" type="button">Random swing</button>
+            <button class="btn btn-sm btn-ghost" id="game-next" type="button">New batter</button>
+          </div>
+        </div>
+
+        <aside class="game-board" aria-label="Scoreboard">
+          <div class="gb-batter">
+            <div class="gb-photo" id="gb-photo"></div>
+            <div>
+              <p class="gb-label">At bat</p>
+              <p class="gb-name" id="gb-name">–</p>
+              <p class="gb-meta" id="gb-meta"></p>
+            </div>
+          </div>
+          <div class="gb-stats">
+            <div><span id="gb-avg">–</span><small>Career AVG</small></div>
+            <div><span id="gb-hr">–</span><small>Career HR</small></div>
+            <div><span id="gb-h">–</span><small>Career hits</small></div>
+          </div>
+          <p class="gb-note" id="gb-note"></p>
+          <div class="gb-count">
+            <div><small>Strikes</small><span class="lights" id="gb-strikes"></span></div>
+            <div><small>Out</small><span class="lights" id="gb-outs"></span></div>
+            <div><small>On base</small>
+              <svg class="gb-bases" id="gb-bases" viewBox="0 0 60 44" aria-hidden="true">
+                <rect data-b="2" x="24" y="2" width="12" height="12" transform="rotate(45 30 8)"/>
+                <rect data-b="3" x="8" y="18" width="12" height="12" transform="rotate(45 14 24)"/>
+                <rect data-b="1" x="40" y="18" width="12" height="12" transform="rotate(45 46 24)"/>
+              </svg>
+            </div>
+            <div><small>Runs</small><span class="gb-num" id="gb-runs">0</span></div>
+            <div><small>At-bats</small><span class="gb-num" id="gb-ab">0</span></div>
+          </div>
+          <p class="gb-play" id="gb-play" aria-live="polite"></p>
+          <ol class="gb-log" id="gb-log" aria-label="Play-by-play"></ol>
+          <p class="gb-odds" id="gb-odds"></p>
+        </aside>
+      </div>
+      <p class="game-hint">Click anywhere on the field to swing. A fair ball is a hit as often as the batter really got hits (his career batting average); the zone you hit decides single, double, triple or home run. Foul balls are strikes. An out, a home run, or coming all the way around to score ends the at-bat, and a new batter steps up. Career numbers come from this data set (all leagues).</p>
+    </div>
+  </div>
 
   <footer class="site-footer">
     Data: Lahman Baseball Database (SABR), CC BY-SA 3.0. Built by Emily Huddleston.

@@ -390,3 +390,19 @@ html { scroll-behavior: smooth; }
 .cheers { display: none; }
 .fan .spot { opacity: 0.35; }
 .fan .seats { display: none; }
+
+/* Ballpark name sign, placed below the fans so it's never covered */
+.park-sign {
+  margin: 14px 0 0;
+  padding: 6px 18px;
+  font-family: var(--font-head);
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  background: #123526;
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+.park-sign span { color: var(--gold); }
