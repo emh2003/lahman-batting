@@ -259,3 +259,50 @@ footer.site-footer {
   .reveal { opacity: 1; transform: none; transition: none; }
   .ball-icon { transition: none; }
 }
+
+/* ---------- Scoreboard tooltip (shared by every chart; see js/chart-theme.js) ---------- */
+.sb-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  min-width: 150px;
+  max-width: 260px;
+  padding: 8px 10px 7px;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0) 0 0 / 6px 6px,
+    #0f2c20;
+  border: 3px solid #0a1f16;
+  outline: 1px solid rgba(227,180,95,0.45);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px -10px rgba(0,0,0,0.85);
+  color: var(--chalk);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.08s ease-out;
+}
+.sb-tip.on { opacity: 1; }
+.sb-tip-title {
+  font-family: var(--font-head);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #9fc4ae;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  border-bottom: 1px dashed rgba(255,255,255,0.15);
+}
+.sb-tip-row { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; line-height: 1.5; }
+.sb-tip-row i { width: 9px; height: 9px; border-radius: 50%; flex: none; box-shadow: 0 0 6px currentColor; }
+.sb-tip-row span { color: #cfe3d6; flex: 1; }
+.sb-tip-row b {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(227,180,95,0.45);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+.sb-tip-foot { margin-top: 3px; font-size: 0.74rem; color: #cfe3d6; letter-spacing: 0.02em; }
+.chart-hint { margin: -6px 0 8px; font-size: 0.78rem; color: var(--ink-muted); letter-spacing: 0.02em; }

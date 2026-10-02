@@ -18,16 +18,25 @@
   setupScoreboard();
   setupStretch();
 
-  function options(fmt, { legend = false, yMin } = {}) {
+  const { baseball, deltaFooter, drawIn, whenVisible } = window.ChartTheme;
+
+  function options(fmt, { legend = false, yMin, delta, milestones = [], type = "line", n = 10 } = {}) {
     return {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
+      layout: { padding: { top: milestones.length ? (milestones.length > 1 ? 36 : 18) : 0 } },   // room for the pennants
+      animation: type === "bar" ? drawIn("bar", n) || undefined : undefined,
+      animations: type === "line" ? drawIn("line", n) || undefined : undefined,
       plugins: {
         legend: { display: legend, position: "bottom", labels: { color: INK, usePointStyle: true, boxWidth: 10, boxHeight: 10 } },
         tooltip: {
-          callbacks: { label: (c) => " " + (c.dataset.label ? c.dataset.label + ": " : "") + fmt(c.parsed.y) },
+          callbacks: {
+            label: (c) => " " + (c.dataset.label ? c.dataset.label + ": " : "") + fmt(c.parsed.y),
+            footer: delta ? deltaFooter(delta) : () => "",
+          },
         },
+        milestones: { items: milestones },
       },
       scales: {
         x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 14 }, border: { color: RULE } },
@@ -37,15 +46,22 @@
     };
   }
 
-  const bar = (id, labels, data, fmt, colors) =>
-    new Chart(document.getElementById(id), {
-      type: "bar",
-      data: { labels, datasets: [{ data, backgroundColor: colors || barFill(BLUE), hoverBackgroundColor: BLUE, borderRadius: 6, borderSkipped: "start", maxBarThickness: 44 }] },
-      options: options(fmt),
-    });
+  // Charts are created the first time they scroll into view, so they draw in
+  // while the reader is looking at them.
+  const later = (id, make) => {
+    const canvas = document.getElementById(id);
+    whenVisible(canvas.closest("figure") || canvas, () => make(canvas));
+  };
 
-  const line = (id, labels, series, fmt, opts = {}) =>
-    new Chart(document.getElementById(id), {
+  const bar = (id, labels, data, fmt, colors, extra = {}) => later(id, (canvas) =>
+    new Chart(canvas, {
+      type: "bar",
+      data: { labels, datasets: [{ data, backgroundColor: colors || barFill(BLUE), hoverBackgroundColor: colors ? undefined : BLUE, borderRadius: 6, borderSkipped: "start", maxBarThickness: 44 }] },
+      options: options(fmt, { type: "bar", n: labels.length, ...extra }),
+    }));
+
+  const line = (id, labels, series, fmt, opts = {}) => later(id, (canvas) =>
+    new Chart(canvas, {
       type: "line",
       data: {
         labels,
@@ -54,48 +70,58 @@
           backgroundColor: series.length === 1 ? areaFill(s.color) : s.color,
           fill: series.length === 1 ? "start" : false,
           pointBackgroundColor: s.color,
-          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 6, tension: 0.25, spanGaps: false,
+          // single series: a baseball marks the hovered season; multi-series keep colored dots
+          pointStyle: series.length === 1 ? baseball : "circle",
+          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: series.length === 1 ? 9 : 6, tension: 0.25, spanGaps: false,
         })),
       },
-      options: options(fmt, { legend: series.length > 1, ...opts }),
-    });
+      options: options(fmt, { legend: series.length > 1, n: labels.length, ...opts }),
+    }));
+
+  // Differences shown in the tooltip footers
+  const dPts = (d) => (d * 100).toFixed(1) + " pts";
+  const dAvg = (d) => d.toFixed(3).replace(/^0/, "");
 
   fetch("data/report.json")
     .then((r) => r.json())
     .then(({ charts: c }) => {
       // 1. HR per 600 PA by decade
-      bar("c1", c.hr_by_decade.labels, c.hr_by_decade.values, one);
+      bar("c1", c.hr_by_decade.labels, c.hr_by_decade.values, one, null,
+          { delta: one, milestones: [{ x: "1920s", text: "Live-ball era" }] });
 
       // 2. Strikeout and walk rates by season
       line("c2", c.k_by_year.labels, [
         { label: "Strikeout rate", data: c.k_by_year.k, color: ORANGE },
         { label: "Walk rate", data: c.k_by_year.bb, color: BLUE },
-      ], (x) => pct(x, 0));
+      ], (x) => pct(x, 1), { milestones: [{ x: 1969, text: "Mound lowered" }, { x: 2020, text: "60 games" }] });
 
       // 3. League batting average by season (zoomed axis: it's a line, not bars)
-      line("c3", c.avg_by_year.labels, [{ label: "", data: c.avg_by_year.values, color: BLUE }], avg, { yMin: 0.22 });
+      line("c3", c.avg_by_year.labels, [{ label: "", data: c.avg_by_year.values, color: BLUE }], avg,
+           { yMin: 0.22, delta: dAvg, milestones: [{ x: 1920, text: "Live-ball era" }, { x: 1968, text: "Year of the Pitcher" }] });
 
       // 4. Three true outcomes by decade
-      bar("c4", c.tto_by_decade.labels, c.tto_by_decade.values, (x) => pct(x, 0));
+      bar("c4", c.tto_by_decade.labels, c.tto_by_decade.values, (x) => pct(x, 1), null, { delta: dPts });
 
       // 5. Singles share of hits by decade
-      bar("c5", c.singles_by_decade.labels, c.singles_by_decade.values, (x) => pct(x, 0));
+      bar("c5", c.singles_by_decade.labels, c.singles_by_decade.values, (x) => pct(x, 1), null, { delta: dPts });
 
       // 6. Stolen bases by season, 2023 highlighted
       bar("c6", c.sb_by_year.labels, c.sb_by_year.values, int,
-          c.sb_by_year.labels.map((y) => (y === 2023 ? ORANGE : MUTED_BAR)));
+          c.sb_by_year.labels.map((y) => (y === 2023 ? ORANGE : MUTED_BAR)),
+          { delta: int, milestones: [{ x: 2020, text: "60 games" }, { x: 2023, text: "New rules" }] });
 
       // 7. Born-abroad share of PA by decade
-      bar("c7", c.foreign_by_decade.labels, c.foreign_by_decade.values, (x) => pct(x, 0));
+      bar("c7", c.foreign_by_decade.labels, c.foreign_by_decade.values, (x) => pct(x, 1), null, { delta: dPts });
 
       // 8. Players per season
-      line("c8", c.players_by_year.labels, [{ label: "", data: c.players_by_year.players, color: BLUE }], int);
+      line("c8", c.players_by_year.labels, [{ label: "", data: c.players_by_year.players, color: BLUE }], int,
+           { delta: int, milestones: [{ x: 1961, text: "Expansion begins" }, { x: 1998, text: "30 teams" }] });
 
       // 9. Negro Leagues vs AL/NL batting average, 1920-1948
       line("c9", c.negro_vs_mlb.labels, [
         { label: "AL/NL", data: c.negro_vs_mlb.mlb, color: BLUE },
         { label: "Negro Leagues", data: c.negro_vs_mlb.negro, color: ORANGE },
-      ], avg, { yMin: 0.22 });
+      ], avg, { yMin: 0.22, milestones: [{ x: 1947, text: "Robinson debuts" }] });
     })
     .catch((err) => {
       document.querySelectorAll(".chart-box").forEach((b) => {

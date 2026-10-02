@@ -246,10 +246,10 @@
   }
 
   function makeCharts() {
-    const { areaFill, barFill } = window.ChartTheme;
+    const { areaFill, barFill, baseball } = window.ChartTheme;
     charts.time = new Chart($("c-time"), {
       type: "line",
-      data: { labels: [], datasets: [{ data: [], borderColor: SERIES[0], backgroundColor: areaFill(SERIES[0]), pointBackgroundColor: SERIES[0], fill: true, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 6, tension: 0.25, spanGaps: true }] },
+      data: { labels: [], datasets: [{ data: [], borderColor: SERIES[0], backgroundColor: areaFill(SERIES[0]), pointBackgroundColor: SERIES[0], pointStyle: baseball, fill: true, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 9, tension: 0.25, spanGaps: true }] },
       options: baseOptions(false),
     });
     charts.brk = new Chart($("c-break"), {
@@ -266,6 +266,40 @@
     trendOpts.plugins.legend.display = true;
     trendOpts.plugins.legend.position = "bottom";
     charts.trend = new Chart($("c-trend"), { type: "line", data: { labels: [], datasets: [] }, options: trendOpts });
+
+    // ---- Click a chart to filter the dashboard (click the same thing again to undo)
+    const pointer = (evt, els) => { evt.native.target.style.cursor = els.length ? "pointer" : "default"; };
+    [charts.time, charts.brk, charts.leaders].forEach((c) => { c.options.onHover = pointer; });
+
+    // Season chart: zoom the season filters to the clicked season (or decade).
+    charts.time.options.onClick = (_evt, els) => {
+      if (!els.length) return;
+      const label = charts.time.data.labels[els[0].index];
+      const y0 = $("s-grain").value === "year" ? +label : parseInt(label, 10);
+      const y1 = $("s-grain").value === "year" ? y0 : Math.min(y0 + 9, YEARS[YEARS.length - 1]);
+      const already = +$("f-year-from").value === Math.max(y0, YEARS[0]) && +$("f-year-to").value === y1;
+      $("f-year-from").value = String(already ? YEARS[0] : Math.max(y0, YEARS[0]));
+      $("f-year-to").value = String(already ? YEARS[YEARS.length - 1] : y1);
+      update();
+    };
+    // Group chart: filter to the clicked group.
+    const FILTER_FOR = { grp: "f-group", lgName: "f-league", teamLabel: "f-team", bats: "f-bats", country: "f-country" };
+    charts.brk.options.onClick = (_evt, els) => {
+      if (!els.length) return;
+      const bKey = $("s-breakdown").value, label = charts.brk.data.labels[els[0].index];
+      const id = FILTER_FOR[bKey];
+      if (!id) { $("status").textContent = `There's no filter for ${label.toLowerCase()} throwers. Try another breakdown.`; return; }
+      const value = bKey === "teamLabel" ? (ROWS.find((r) => r.teamLabel === label) || {}).fr : label;
+      $(id).value = $(id).value === value ? "" : value;
+      update();
+    };
+    // Top-10 chart: filter to the clicked player.
+    charts.leaders.options.onClick = (_evt, els) => {
+      if (!els.length) return;
+      const name = charts.leaders.data.labels[els[0].index];
+      $("f-player").value = $("f-player").value === name ? "" : name;
+      update();
+    };
   }
 
   // Totals and counts are drawn as bars starting at zero. Rates are drawn as
@@ -285,7 +319,7 @@
     chart.options.scales.x.grace = isRate ? "5%" : 0;
   }
 
-  function setTickFormat(chart, axis, m) {
+  function setTickFormat(chart, axis, m, withDelta = false) {
     chart.options.scales[axis].ticks.callback = (v) =>
       m.type === "rate" ? m.fmt(v) : Number(v).toLocaleString("en-US");
     chart.options.plugins.tooltip.callbacks = {
@@ -294,8 +328,17 @@
         const name = ctx.dataset.label ? ctx.dataset.label + ": " : "";
         return " " + name + m.fmt(val);
       },
+      // change from the previous season/decade, on the over-time chart
+      footer: withDelta ? window.ChartTheme.deltaFooter(m.fmt) : () => "",
     };
   }
+
+  // Key moments in baseball history, marked on the season chart when in range.
+  const MILESTONES = {
+    year: [{ x: 1920, text: "Live-ball era" }, { x: 1947, text: "Integration" },
+           { x: 1968, text: "Year of the Pitcher" }, { x: 2023, text: "New rules" }],
+    decade: [{ x: "1920s", text: "Live ball" }, { x: "2020s", text: "New rules" }],
+  };
 
   // Keep a category's color the same while it stays in the top 5.
   function assignSlots(cats) {
@@ -359,7 +402,9 @@
     charts.time.data.labels = timeLabels;
     charts.time.data.datasets[0].data = timeLabels.map((t) => (byTime.has(t) ? m.f(byTime.get(t)) : null));
     charts.time.data.datasets[0].pointRadius = grain === "decade" ? 4 : 0;
-    setTickFormat(charts.time, "y", m);
+    setTickFormat(charts.time, "y", m, true);
+    charts.time.options.plugins.milestones = { items: MILESTONES[grain] };
+    charts.time.options.layout = { padding: { top: 36 } };
     charts.time.update();
     $("t-time").textContent = `${m.short} by ${grain === "year" ? "season" : "decade"}`;
 
